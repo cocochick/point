@@ -393,18 +393,19 @@ void MainWindow::translate(QPoint dest){
     for(auto &index: selected_circle){
         circles[index].translate(dest.x(),dest.y());
     }
-   // for (auto &index: selected_ploy){
-
-    // }
+    for (auto &index: selected_ploy){
+        polys[index].translate(dest.x(),dest.y());
+    }
 }
 
 void MainWindow::select_draw(QPainter &painter){
     for(auto &index: selected_line){
-        lines[index].clear(painter);
         lines[index].drawByBresenham(painter);
     }
     for(auto &index: selected_circle){
-        circles[index].clear(painter);
         circles[index].draw(painter);
+    }
+    for(auto &index: selected_ploy){
+        polys[index].draw(painter);
     }
 }

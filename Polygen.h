@@ -20,6 +20,7 @@ public:
     void draw(QPainter &painter);
     void setVertex();
     std::vector<QPoint> getPoint() const;
+    void translate(int x, int y);
 };
 
 

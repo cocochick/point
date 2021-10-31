@@ -124,7 +124,7 @@ void Line::translate(int x, int y){
     int trans_x = x -(start.x()+end.x())/2;
     int trans_y = y - (start.y()+end.y())/2;
     start.setX(start.x()+trans_x);
-    end.setY(end.x()+trans_x);
+    end.setX(end.x()+trans_x);
     start.setY(start.y()+trans_y);
     end.setY(end.y()+trans_y);
 }
