@@ -31,7 +31,7 @@
        </property>
        <property name="icon">
         <iconset resource="ico.qrc">
-         <normaloff>:/new/ico/assets/ico/line.png</normaloff>:/new/ico/assets/ico/line.png</iconset>
+         <normaloff>:/new/ico/ico/line.png</normaloff>:/new/ico/ico/line.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -48,7 +48,7 @@
        </property>
        <property name="icon">
         <iconset resource="ico.qrc">
-         <normaloff>:/new/ico/assets/ico/circle.png</normaloff>:/new/ico/assets/ico/circle.png</iconset>
+         <normaloff>:/new/ico/ico/circle.png</normaloff>:/new/ico/ico/circle.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -65,7 +65,7 @@
        </property>
        <property name="icon">
         <iconset resource="ico.qrc">
-         <normaloff>:/new/ico/assets/ico/pol.png</normaloff>:/new/ico/assets/ico/pol.png</iconset>
+         <normaloff>:/new/ico/ico/pol.png</normaloff>:/new/ico/ico/pol.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -82,7 +82,7 @@
        </property>
        <property name="icon">
         <iconset resource="ico.qrc">
-         <normaloff>:/new/ico/assets/ico/con.png</normaloff>:/new/ico/assets/ico/con.png</iconset>
+         <normaloff>:/new/ico/ico/bzr.png</normaloff>:/new/ico/ico/bzr.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -99,7 +99,7 @@
        </property>
        <property name="icon">
         <iconset resource="ico.qrc">
-         <normaloff>:/new/ico/assets/ico/select.png</normaloff>:/new/ico/assets/ico/select.png</iconset>
+         <normaloff>:/new/ico/ico/select.png</normaloff>:/new/ico/ico/select.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -116,7 +116,7 @@
        </property>
        <property name="icon">
         <iconset resource="ico.qrc">
-         <normaloff>:/new/ico/assets/ico/move.png</normaloff>:/new/ico/assets/ico/move.png</iconset>
+         <normaloff>:/new/ico/ico/move.png</normaloff>:/new/ico/ico/move.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -153,7 +153,7 @@
        </property>
        <property name="icon">
         <iconset resource="ico.qrc">
-         <normaloff>:/new/ico/assets/ico/delete.png</normaloff>:/new/ico/assets/ico/delete.png</iconset>
+         <normaloff>:/new/ico/ico/delete.png</normaloff>:/new/ico/ico/delete.png</iconset>
        </property>
        <property name="iconSize">
         <size>

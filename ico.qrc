@@ -1,11 +1,11 @@
 <RCC>
     <qresource prefix="/new/ico">
-        <file>assets/ico/line.png</file>
-        <file>assets/ico/pol.png</file>
-        <file>assets/ico/circle.png</file>
-        <file>assets/ico/select.png</file>
-        <file>assets/ico/con.png</file>
-        <file>assets/ico/delete.png</file>
-        <file>assets/ico/move.png</file>
+        <file>ico/bzr.png</file>
+        <file>ico/circle.png</file>
+        <file>ico/delete.png</file>
+        <file>ico/line.png</file>
+        <file>ico/move.png</file>
+        <file>ico/pol.png</file>
+        <file>ico/select.png</file>
     </qresource>
 </RCC>
