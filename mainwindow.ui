@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>438</width>
+      <height>44</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QToolButton" name="Line">
+       <property name="text">
+        <string>sas</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/assets/ico/line.png</normaloff>:/new/ico/assets/ico/line.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="Circle">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/assets/ico/circle.png</normaloff>:/new/ico/assets/ico/circle.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="Pol">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/assets/ico/pol.png</normaloff>:/new/ico/assets/ico/pol.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="Curve">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/assets/ico/con.png</normaloff>:/new/ico/assets/ico/con.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="select">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/assets/ico/select.png</normaloff>:/new/ico/assets/ico/select.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="toolButton_4">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>assets/ico/line.png</normaloff>assets/ico/line.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="spinBox"/>
+     </item>
+     <item>
+      <widget class="QToolButton" name="toolButton_5">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>assets/ico/line.png</normaloff>assets/ico/line.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="Delall">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/assets/ico/delete.png</normaloff>:/new/ico/assets/ico/delete.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1000</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_F">
+    <property name="title">
+     <string>图形(&amp;F)</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_Q">
+    <property name="title">
+     <string>曲线(&amp;Q)</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_T">
+    <property name="title">
+     <string>填充(&amp;T)</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_B">
+    <property name="title">
+     <string>变换(&amp;B)</string>
+    </property>
+   </widget>
+   <addaction name="menu_F"/>
+   <addaction name="menu_Q"/>
+   <addaction name="menu_T"/>
+   <addaction name="menu_B"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_Z">
+   <property name="icon">
+    <iconset>
+     <normaloff>assets/ico/line.png</normaloff>assets/ico/line.png</iconset>
+   </property>
+   <property name="text">
+    <string>直线(&amp;Z)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="action_Z_2">
+   <property name="text">
+    <string>多边形(&amp;D)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="action_P">
+   <property name="text">
+    <string>平移(&amp;P)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="action_S">
+   <property name="text">
+    <string>缩放(&amp;S)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_X">
+   <property name="text">
+    <string>旋转(&amp;X）</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="ico.qrc"/>
+ </resources>
+ <connections/>
+</ui>
