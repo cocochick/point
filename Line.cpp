@@ -118,3 +118,21 @@ void Line::drawByBresenham(QPainter &painter){
     painter.setPen(pen);
     Bresenham(start.x(), start.y(), end.x(), end.y(),painter);
 }
+
+
+void Line::translate(int x, int y){
+    int trans_x = x -(start.x()+end.x())/2;
+    int trans_y = y - (start.y()+end.y())/2;
+    start.setX(start.x()+trans_x);
+    end.setY(end.x()+trans_x);
+    start.setY(start.y()+trans_y);
+    end.setY(end.y()+trans_y);
+}
+
+void Line::clear(QPainter &painter){
+    QPen tmp = pen;
+    tmp.setColor(Qt::white);
+    painter.setPen(tmp);
+    drawByBresenham(painter);
+    painter.setPen(pen);
+}

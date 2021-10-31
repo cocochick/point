@@ -45,11 +45,14 @@ private:
     std::vector<Circle> circles;
     std::vector<QPoint> points;
     std::set<size_t> selected_line;
-    std::set<size_t> selectend_ploy;
+    std::set<size_t> selected_ploy;
     std::set<size_t> selected_circle;
 
 private:
     void get_select(QPoint start, QPoint end);
+    static bool inbox(QPoint p,QPoint left_up, QPoint right_down);
+    void translate(QPoint dest);
+    void select_draw(QPainter &painter);
 
 public slots:
     //槽函数
@@ -58,6 +61,7 @@ public slots:
     void setMode_Pol();
     void setMode_Curve();
     void setMode_Select();
+    void setMode_Move();
     void clearAll();
 
 

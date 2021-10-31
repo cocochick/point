@@ -4,7 +4,7 @@
 #include <QPainter>
 
 
-class Line :QPainter{
+class Line{
 private:
     QPen pen;
     QPoint start;
@@ -40,6 +40,9 @@ public:
     QPen getpen() const{ return this->pen;}
     QPoint Start() const{return this->start;}
     QPoint End() const{return this->end;}
+
+    void translate(int x=0, int y=0);
+    void clear(QPainter &painter);
 
 };
 

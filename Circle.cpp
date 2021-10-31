@@ -47,6 +47,7 @@ void Circle::Complete(int x, int y,QPainter &painter)  {
 }
 
 void Circle::translate(int x, int y){
+   // clear();
    center = QPoint(x,y);
 }
 

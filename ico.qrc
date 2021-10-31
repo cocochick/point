@@ -6,5 +6,6 @@
         <file>assets/ico/select.png</file>
         <file>assets/ico/con.png</file>
         <file>assets/ico/delete.png</file>
+        <file>assets/ico/move.png</file>
     </qresource>
 </RCC>

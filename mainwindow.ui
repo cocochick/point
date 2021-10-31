@@ -110,13 +110,13 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="toolButton_4">
+      <widget class="QToolButton" name="move">
        <property name="text">
         <string/>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>assets/ico/line.png</normaloff>assets/ico/line.png</iconset>
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/assets/ico/move.png</normaloff>:/new/ico/assets/ico/move.png</iconset>
        </property>
        <property name="iconSize">
         <size>
