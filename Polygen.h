@@ -19,6 +19,7 @@ private:
 public:
     void draw(QPainter &painter);
     void setVertex();
+    std::vector<QPoint> getPoint() const;
 };
 
 

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <vector>
 #include <stack>
+#include <set>
 #include "Mode.h"
 #include "Circle.h"
 #include "Polygen.h"
@@ -43,9 +44,9 @@ private:
     std::vector<Polygen> polys;
     std::vector<Circle> circles;
     std::vector<QPoint> points;
-    std::vector<size_t> selected_line;
-    std::vector<size_t> selectend_ploy;
-    std::vector<size_t> selected_circle;
+    std::set<size_t> selected_line;
+    std::set<size_t> selectend_ploy;
+    std::set<size_t> selected_circle;
 
 private:
     void get_select(QPoint start, QPoint end);

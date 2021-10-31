@@ -6,6 +6,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+bool inbox(QPoint p,QPoint left_up, QPoint right_down);
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -150,7 +151,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e){
                 this->end = e->pos();
                 isDrawing = true;
                 this->update(this->rect());
-                std::cout<<"moving"<<std::endl;
+                // std::cout<<"moving"<<std::endl;
             }
             break;
          }
@@ -199,7 +200,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
                 isDrawing = false;    //结束绘图
                 push_leftbutton = false;
                 this->update(this->rect());
-                std::cout<<"end"<<std::endl;
+                // std::cout<<"end"<<std::endl;
                 break;
             }
             case POLYGEN:{
@@ -212,7 +213,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
             }
             case SELECT:{
                 isDrawing = false;
-
+                get_select(start,end);
+                std::cout<<selected_line.size()<<std::endl<<selected_circle.size()<<std::endl<<selectend_ploy.size()<<std::endl;
                 this->update(this->rect());
                 break;
             }
@@ -309,14 +311,43 @@ void MainWindow::clearAll(){
 }
 
 void MainWindow::get_select(QPoint left_up, QPoint right_down){
+    size_t i = 0;
     for (auto beg =lines.begin();beg!=lines.end();++beg){
-
+        if(inbox(beg->End(),left_up,right_down) && inbox(beg->Start(),left_up,right_down)){
+            selected_line.insert(i);
+        }
+        ++i;
     }
+    i = 0;
     for (auto beg =circles.begin();beg!=circles.end();++beg){
-
+        if(inbox(beg->getCenter(),left_up,right_down)
+                && inbox(beg->getCenter()+QPoint(0,beg->getRadius()),left_up,right_down)
+                && inbox(beg->getCenter()+QPoint(0,-beg->getRadius()),left_up,right_down)
+                && inbox(beg->getCenter()+QPoint(beg->getRadius(),0),left_up,right_down)
+                && inbox(beg->getCenter()+QPoint(-beg->getRadius(),0),left_up,right_down)){
+            selected_circle.insert(i);
+        }
+        ++i;
     }
+    i = 0;
     for (auto beg =polys.begin();beg!=polys.end();++beg){
-
+        auto point_tmp = beg->getPoint();
+        bool in_box = true;
+        for(auto pbeg = point_tmp.begin();pbeg != point_tmp.end(); ++pbeg){
+            if(!inbox(*pbeg,left_up,right_down)){
+                in_box = false;
+                break;
+            }
+        }
+        if(in_box) selectend_ploy.insert(i);
+        ++i;
     }
+}
+
+bool inbox(QPoint p,QPoint left_up, QPoint right_down){
+    if(p.x()>left_up.x() && p.x()<right_down.x() && p.y()>left_up.y() && p.y()<right_down.y()){
+        return true;
+    }
+    return false;
 }
 

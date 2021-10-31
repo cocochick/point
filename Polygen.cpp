@@ -28,3 +28,7 @@ void Polygen::setVertex()
     Line line(*point.begin(), *(point.end() - 1));
     vertex.push_back(line);
 }
+
+std::vector<QPoint> Polygen::getPoint() const{
+    return this->point;
+}
