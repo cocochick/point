@@ -1,4 +1,4 @@
-#include  <QPainter>
+﻿#include  <QPainter>
 #include <QPixmap>
 #include <QMouseEvent>
 #include <cmath>
@@ -64,6 +64,8 @@ void MainWindow::paintEvent(QPaintEvent *){
                break;
             }
             case CURVE:{
+                Curve(points).draw(ptmp);
+                break;
             }
             case FILL:{
             }
@@ -98,6 +100,9 @@ void MainWindow::paintEvent(QPaintEvent *){
             beg->draw(ppix);
         }
         for (auto beg =polys.begin();beg!=polys.end();++beg){
+            beg->draw(ppix);
+        }
+        for (auto beg =curves.begin();beg!=curves.end();++beg){
             beg->draw(ppix);
         }
 
@@ -139,7 +144,26 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
                 break;
             }
             case CURVE:{
-                break;
+                if(!push_leftbutton){
+                    if(!points.empty()){points.clear();}
+                    tmp = e->pos();
+                    points.push_back(tmp);
+                    isDrawing = true;
+                    push_leftbutton = true;
+                    this->update(this->rect());
+                }
+                else {
+                    tmp = e->pos();
+                    if(points.size() == 1){
+                        points.push_back(tmp);
+                    }
+                    else{
+                        points.insert(points.end() - 1, tmp);
+                    }
+                    // isDrawing = false;
+                    this->update(this->rect());
+                    // std::cout<<"2"<<std::endl;
+                }
             }
             case FILL:{
                 break;
@@ -156,6 +180,18 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
             }
             case MOVE:{
                 this->isDrawing = true;
+                tmp = e->pos();
+                for(int i = 0; i < curves.size(); i++){
+                    for(int j = 0; j < curves[i].control_point.size(); j++)
+                        if(abs(tmp.x() - curves[i].control_point[j].x()) <= 10
+                                && abs(tmp.y() - curves[i].control_point[j].y()) <= 10){
+                            selected_curve = curPoint(i,j);
+                            break;
+                        }
+                        else{
+                            selected_curve.curve_num = -1;
+                        }
+                }
                 this->update(this->rect());
                 break;
             }
@@ -180,8 +216,23 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
                 break;
             }
         }
-
      }
+    else if(e->button()==Qt::RightButton){
+        switch(mode){
+            case CURVE:{
+                Curve cur(points);
+                curves.push_back(cur);
+                points.clear();
+                push_leftbutton = false;
+                isDrawing = false;
+                this->update(this->rect());
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e){
@@ -268,6 +319,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
                 // need_clear = true;
                 translate(e->pos());
                 this->update(this->rect());
+                selected_curve.curve_num = -1;
                 break;
             }
             case SCALE:{
@@ -491,6 +543,10 @@ void MainWindow::translate(QPoint dest){
     for (auto &index: selected_ploy){
         polys[index].translate(dest.x(),dest.y());
     }
+    if(selected_curve.curve_num < 0)
+        return;
+    curves[selected_curve.curve_num].translate(dest.x(),dest.y(), selected_curve.point_num);
+
 }
 
 /****************************************************************************
@@ -532,6 +588,9 @@ void MainWindow::select_draw(QPainter &painter){
     for(auto &index: selected_ploy){
         polys[index].draw(painter);
     }
+    if(selected_curve.curve_num < 0)
+        return;
+    curves[selected_curve.curve_num].draw(painter);
 }
 
 void MainWindow::select_clear_indarwimg(QPainter &painter){
