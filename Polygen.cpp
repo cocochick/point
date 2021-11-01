@@ -24,7 +24,11 @@ void Polygen::draw(QPainter &painter){
     }
 }
 
-
+Polygen::Polygen(const Polygen& p){
+    point = p.point;
+    vertex = p.vertex;
+    pen = p.pen;
+}
 
 void Polygen::setVertex(){   
     vertex.clear();

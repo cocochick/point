@@ -75,8 +75,10 @@ void MainWindow::paintEvent(QPaintEvent *){
                 break;
             }
             case MOVE:
-            case ROTATE:
                 select_draw(ptmp);
+                break;
+            case ROTATE:
+                select_draw_rotate(ptmp);
                 break;
             case SCALE:
                 if(need_clear){
@@ -266,7 +268,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e){
          }
          case ROTATE:{
             if(push_leftbutton_twice){
-                rotate(start,e->pos());
+                rotate_drawing(start,e->pos());
                 this->update(this->rect());
             }
             break;
@@ -331,7 +333,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
                     this->isDrawing = false;
                     this->push_leftbutton = false;
                     this->push_leftbutton_twice = false;
-                    //rotate(start,e->pos());
+                    rotate(start,e->pos());
                     this->update(this->rect());
                 }
                 break;
@@ -458,9 +460,13 @@ void MainWindow::clearAll(){
     this->points.clear();
     this->circles.clear();
     this->polys.clear();
+    this->curves.clear();
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
+    lines_tmp.clear();
+    circles_tmp.clear();
+    polys_tmp.clear();
     this->isDrawing = false;
     pix = QPixmap(1000,800);
     pix.fill(Qt::white);
@@ -564,6 +570,24 @@ void MainWindow::rotate(QPoint base, QPoint dest){
     }
 }
 
+void MainWindow::rotate_drawing(QPoint base, QPoint dest){
+    for(auto &index: selected_line){
+        Line line_tmp = lines[index];
+        line_tmp.rotate(base.x(),base.y(),dest.x(),dest.y());
+        lines_tmp.push_back(line_tmp);
+    }
+    for(auto &index: selected_circle){
+        Circle cir_tmp = circles[index];
+        cir_tmp.rotate(base.x(),base.y(),dest.x(),dest.y());
+        circles_tmp.push_back(cir_tmp);
+    }
+    for(auto &index: selected_ploy){
+        Polygen pol_tmp = polys[index];
+        pol_tmp.rotate(base.x(),base.y(),dest.x(),dest.y());
+        polys_tmp.push_back(pol_tmp);
+    }
+}
+
 void MainWindow::scale(double value){
     for(auto &index: selected_circle){
         circles[index].scale(value);
@@ -591,6 +615,21 @@ void MainWindow::select_draw(QPainter &painter){
     if(selected_curve.curve_num < 0)
         return;
     curves[selected_curve.curve_num].draw(painter);
+}
+
+void MainWindow::select_draw_rotate(QPainter &painter){
+    for(auto &line :lines_tmp){
+        line.drawByBresenham(painter);
+    }
+    for(auto &cir :circles_tmp){
+        cir.draw(painter);
+    }
+    for(auto &poly:polys_tmp){
+        poly.draw(painter);
+    }
+    lines_tmp.clear();
+    circles_tmp.clear();
+    polys_tmp.clear();
 }
 
 void MainWindow::select_clear_indarwimg(QPainter &painter){

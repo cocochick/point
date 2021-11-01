@@ -54,6 +54,9 @@ private:
     std::vector<Line> lines;
     std::vector<Polygen> polys;
     std::vector<Circle> circles;
+    std::vector<Line> lines_tmp;
+    std::vector<Polygen> polys_tmp;
+    std::vector<Circle> circles_tmp;
     std::vector<Curve> curves;
     std::vector<QPoint> points;
     std::set<size_t> selected_line;
@@ -67,8 +70,10 @@ private:
     static bool inbox(QPoint p,QPoint left_up, QPoint right_down);
     void translate(QPoint dest);
     void rotate(QPoint base, QPoint dest);
+    void rotate_drawing(QPoint base, QPoint dest);
     void scale(double value);
     void select_draw(QPainter &painter);
+    void select_draw_rotate(QPainter &painter);
     void select_clear_indarwimg(QPainter &painter);
 
 public slots:

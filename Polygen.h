@@ -14,6 +14,7 @@ public:
 public:
     Polygen(){}
     Polygen(std::vector<QPoint> p);
+    Polygen(const Polygen& p);
     //Polygen(const QPoint &cen, int r);
 
 public:
