@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -8,10 +8,18 @@
 #include "Mode.h"
 #include "Circle.h"
 #include "Polygen.h"
+#include "Curve.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+struct curPoint{
+    curPoint():curve_num(-1),point_num(-1){};
+    curPoint(int c, int p):curve_num(c),point_num(p){};
+    int curve_num;
+    int point_num;
+};
 
 class MainWindow : public QMainWindow
 {
@@ -44,10 +52,12 @@ private:
     std::vector<Line> lines;
     std::vector<Polygen> polys;
     std::vector<Circle> circles;
+    std::vector<Curve> curves;
     std::vector<QPoint> points;
     std::set<size_t> selected_line;
     std::set<size_t> selected_ploy;
     std::set<size_t> selected_circle;
+    curPoint selected_curve;
 
 private:
     void get_select(QPoint start, QPoint end);

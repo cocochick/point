@@ -12,6 +12,7 @@ INCLUDEPATH+= \
 
 SOURCES += \
     Circle.cpp \
+    Curve.cpp \
     Line.cpp \
     Polygen.cpp \
     main.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
 
 HEADERS += \
     Circle.h \
+    Curve.h \
     Line.h \
     Mode.h \
     Polygen.h \
