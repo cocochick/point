@@ -8,5 +8,6 @@
         <file>ico/pol.png</file>
         <file>ico/select.png</file>
         <file>ico/rotate.png</file>
+        <file>ico/scale.png</file>
     </qresource>
 </RCC>

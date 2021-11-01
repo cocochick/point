@@ -8,6 +8,7 @@
 
 class Polygen{
 public:
+    QPen pen;
     std::vector<QPoint> point;  //顶点集
     std::vector<Line> vertex;   //边集
 public:
@@ -21,6 +22,8 @@ public:
     std::vector<QPoint> getPoint() const;
     void translate(int x, int y);
     void rotate(int x, int y, int dest_x, int dest_y);
+    void scale(double value);
+    void clear(QPainter &painter);
 };
 
 

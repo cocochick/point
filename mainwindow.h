@@ -28,6 +28,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *);
     void mouseReleaseEvent(QMouseEvent *);
     void mouseDoubleClickEvent(QMouseEvent *);
+    void wheelEvent(QWheelEvent *);
 
 private:
     // std::vector<QPoint> points;
@@ -41,6 +42,7 @@ private:
     bool isDrawing; // 正在绘图
     bool push_leftbutton;
     bool push_leftbutton_twice;
+    bool need_clear; //是否需要清除
     std::vector<Line> lines;
     std::vector<Polygen> polys;
     std::vector<Circle> circles;
@@ -48,13 +50,16 @@ private:
     std::set<size_t> selected_line;
     std::set<size_t> selected_ploy;
     std::set<size_t> selected_circle;
+    float scale_value; // 缩放系数
 
 private:
     void get_select(QPoint start, QPoint end);
     static bool inbox(QPoint p,QPoint left_up, QPoint right_down);
     void translate(QPoint dest);
     void rotate(QPoint base, QPoint dest);
+    void scale(double value);
     void select_draw(QPainter &painter);
+    void select_clear_indarwimg(QPainter &painter);
 
 public slots:
     //槽函数
@@ -65,6 +70,7 @@ public slots:
     void setMode_Select();
     void setMode_Move();
     void setMode_Rotate();
+    void setMode_Scale();
     void clearAll();
 
 

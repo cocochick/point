@@ -136,10 +136,9 @@ void Line::translate(int x, int y){
 
 void Line::clear(QPainter &painter){
     QPen tmp = pen;
-    tmp.setColor(Qt::white);
-    painter.setPen(tmp);
+    pen.setColor(Qt::white);
     drawByBresenham(painter);
-    painter.setPen(pen);
+    pen = tmp;
 }
 
 void Line::rotate(int x, int y, int dest_x, int dest_y){
@@ -172,4 +171,10 @@ void Line::rotate(int x, int y, int dest_x, int dest_y){
     end.setX(int(res_end(0,0)+0.5));
     end.setY(int(res_end(1,0)+0.5));
 
+}
+
+void Line::scale(double value){
+    QPoint mid = (start+end)/2;
+    start = value*(start - mid)+mid;
+    end = value*(end-mid)+mid;
 }

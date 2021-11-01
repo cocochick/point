@@ -58,10 +58,10 @@ void Circle::translate(int x, int y){
 
 void Circle::clear(QPainter &painter){
     QPen tmp = pen;
-    tmp.setColor(Qt::white);
+    pen.setColor(Qt::white);
     painter.setPen(tmp);
     draw(painter);
-    painter.setPen(pen);
+    pen = tmp;
 }
 
 QPoint Circle::Center() const{
@@ -88,4 +88,8 @@ void  Circle::rotate(int x, int y, int dest_x, int dest_y){
     Matrix<double,3,1> res = M * org;
     center.setX(int(res(0,0)+0.5));
     center.setY(int(res(1,0)+0.5));
+}
+
+void  Circle::scale(double value){
+    this->radius = value * this->radius;
 }

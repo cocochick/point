@@ -15,6 +15,7 @@ public:
     Circle(const Circle& c);
     void translate(int x=0, int y=0);
     void rotate(int x, int y, int dest_x, int dest_y);
+    void scale(double value);
     void clear(QPainter &painter);
     QPoint Center() const;
 

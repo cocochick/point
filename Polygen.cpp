@@ -1,5 +1,4 @@
 #include "Polygen.h"
-#include <iostream>
 #include "method.h"
 #include <Eigen/Eigen>
 #include <Eigen/Dense>
@@ -7,6 +6,7 @@
 using namespace Eigen;
 
 Polygen::Polygen(std::vector<QPoint> p):point(p) {
+    pen = QPen(Qt::black,2);
     for (auto iter = p.begin(); iter != p.end() - 1; iter++) {
         Line line(*iter, *(iter + 1));
         vertex.push_back(line);
@@ -18,6 +18,7 @@ Polygen::Polygen(std::vector<QPoint> p):point(p) {
 
 
 void Polygen::draw(QPainter &painter){
+    painter.setPen(pen);
     for (auto &line : vertex) {
         line.drawByBresenham(painter);
     }
@@ -72,6 +73,24 @@ void Polygen::rotate(int x, int y, int dest_x, int dest_y){
         Matrix<double,3,1> res = M * org;
         p.setX(int(res(0,0)+0.5));
         p.setY(int(res(1,0)+0.5));
+    }
+    setVertex();
+}
+
+void Polygen::clear(QPainter &painter){
+   for (auto &line : vertex) {
+        line.clear(painter);
+   }
+}
+
+void Polygen::scale(double value){
+    QPoint mid;
+    for(auto &p:point){
+        mid+=p;
+    }
+    mid = mid/point.size();
+    for(auto &p:point){
+        p = value*(p-mid)+mid;
     }
     setVertex();
 }

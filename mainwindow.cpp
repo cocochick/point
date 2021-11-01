@@ -2,9 +2,9 @@
 #include <QPixmap>
 #include <QMouseEvent>
 #include <cmath>
-#include <iostream>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <iostream>
 
 bool inbox(QPoint p,QPoint left_up, QPoint right_down);
 
@@ -20,9 +20,11 @@ MainWindow::MainWindow(QWidget *parent)
     temppix.fill();
     push_leftbutton = false;
     push_leftbutton_twice = false;
+    need_clear = true;
     start = QPoint(0,0);
     end = QPoint(0,0);
     tmp = QPoint(0,0);
+    scale_value = 1;
     //all in!!!!! ta ta kai
     connect(ui->Line, SIGNAL(clicked()), this, SLOT(setMode_Line()));
     connect(ui->Circle, SIGNAL(clicked()), this, SLOT(setMode_Circle()));
@@ -32,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->Delall, SIGNAL(clicked()), this, SLOT(clearAll()));
     connect(ui->move, SIGNAL(clicked()), this, SLOT(setMode_Move()));
     connect(ui->rotate, SIGNAL(clicked()), this, SLOT(setMode_Rotate()));
+    connect(ui->scale, SIGNAL(clicked()), this, SLOT(setMode_Scale()));
 }
 
 MainWindow::~MainWindow(){
@@ -40,7 +43,8 @@ MainWindow::~MainWindow(){
 
 void MainWindow::paintEvent(QPaintEvent *){
     QPainter painter(this);
-   // painter.drawPixmap(0,0,pix);
+
+ //   painter.drawPixmap(0,0,pix);
     if(isDrawing){
         temppix = pix;
         QPainter ptmp(&temppix);
@@ -68,14 +72,19 @@ void MainWindow::paintEvent(QPaintEvent *){
                 ptmp.drawRect(start.x(),start.y(),end.x()-start.x(),end.y()-start.y());
                 break;
             }
-            case MOVE:{
+            case MOVE:
+            case ROTATE:
                 select_draw(ptmp);
-            }
-            case SCALE:{
-            }
-            case ROTATE:{
+                break;
+            case SCALE:
+                if(need_clear){
+                    select_clear_indarwimg(ptmp);
+                    pix = temppix;
+                    need_clear = false;
+                }
                 select_draw(ptmp);
-            }
+                break;
+
         }
         painter.drawPixmap(0, 0, temppix);
     }else{
@@ -94,7 +103,6 @@ void MainWindow::paintEvent(QPaintEvent *){
 
         painter.drawPixmap(0, 0, pix);
     }
-
 }
 
 /**********************************************************************
@@ -131,8 +139,10 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
                 break;
             }
             case CURVE:{
+                break;
             }
             case FILL:{
+                break;
             }
             case SELECT:{
                 this->selected_circle.clear();
@@ -150,6 +160,7 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
                 break;
             }
             case SCALE:{
+                break;
             }
             case ROTATE:{
                 if(!push_leftbutton){
@@ -187,16 +198,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e){
             break;
          }
          case POLYGEN:{
-             //this ->start = this->end;
-             //this->end = this->tmp;
-             //push_leftbutton = false;
-             //isDrawing = false;
-             //this->update(this->rect());
-             //break;
+             break;
          }
         case CURVE:{
+            break;
         }
          case FILL:{
+            break;
          }
          case MOVE:{
             translate(e->pos());
@@ -242,27 +250,32 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
                 break;
             }
             case CURVE:{
+                break;
             }
             case FILL:{
+                break;
             }
             case SELECT:{
                 isDrawing = false;
                 this->push_leftbutton = false;
                 get_select(start,end);
-                std::cout<<selected_line.size()<<std::endl<<selected_circle.size()<<std::endl<<selected_ploy.size()<<std::endl;
+                // std::cout<<selected_line.size()<<std::endl<<selected_circle.size()<<std::endl<<selected_ploy.size()<<std::endl;
                 this->update(this->rect());
                 break;
             }
             case MOVE:{
                 this->isDrawing = false;
+                // need_clear = true;
                 translate(e->pos());
                 this->update(this->rect());
                 break;
             }
             case SCALE:{
+                break;
             }
             case ROTATE:{
                 if(push_leftbutton_twice){
+                    // need_clear = true;
                     this->isDrawing = false;
                     this->push_leftbutton = false;
                     this->push_leftbutton_twice = false;
@@ -308,6 +321,28 @@ void  MainWindow::mouseDoubleClickEvent(QMouseEvent *e){
     }
 }
 
+
+/********************************************************************
+ ************************* 滚轮事件 **********************************
+ *******************************************************************/
+void MainWindow::wheelEvent(QWheelEvent *e){
+    if(mode==SCALE){
+        if(e->angleDelta().y() >0 ){
+            if(scale_value <1) scale_value = 1;
+            this->scale_value+=0.05;
+            this->update(this->rect());
+            this->scale(scale_value);
+        }else{
+            if(scale_value>1) scale_value = 1;
+            if(scale_value-0.1 > 0.8){
+                this->scale_value-=0.05;
+            }
+            this->update(this->rect());
+            this->scale(scale_value);
+        }
+    }
+}
+
 /******************************************************************
  ******************* 槽函数 ***************************************
  *****************************************************************/
@@ -316,6 +351,7 @@ void MainWindow::setMode_Line(){
     start = QPoint(0,0);
     end = QPoint(0,0);
     tmp = QPoint(0,0);
+    this->isDrawing = false;
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
@@ -326,6 +362,7 @@ void MainWindow::setMode_Circle(){
     start = QPoint(0,0);
     end = QPoint(0,0);
     tmp = QPoint(0,0);
+    this->isDrawing = false;
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
@@ -336,6 +373,7 @@ void MainWindow::setMode_Pol(){
     start = QPoint(0,0);
     end = QPoint(0,0);
     tmp = QPoint(0,0);
+    this->isDrawing = false;
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
@@ -346,6 +384,7 @@ void  MainWindow::setMode_Curve(){
     start = QPoint(0,0);
     end = QPoint(0,0);
     tmp = QPoint(0,0);
+    this->isDrawing = false;
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
@@ -355,12 +394,14 @@ void  MainWindow::setMode_Select(){
     start = QPoint(0,0);
     end = QPoint(0,0);
     tmp = QPoint(0,0);
+    this->isDrawing = false;
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
 }
 
 void MainWindow::clearAll(){
+    // mode =
     this->lines.clear();
     this->points.clear();
     this->circles.clear();
@@ -368,19 +409,27 @@ void MainWindow::clearAll(){
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
-    this->update(this->rect());
+    this->isDrawing = false;
     pix = QPixmap(1000,800);
     pix.fill(Qt::white);
     temppix = pix;
     temppix.fill(Qt::white);
+    this->update(this->rect());
 }
 
 void MainWindow::setMode_Move(){
     this->mode = MOVE;
+    this->isDrawing = false;
 }
 
 void MainWindow::setMode_Rotate(){
     this->mode = ROTATE;
+}
+
+void MainWindow::setMode_Scale(){
+    this->mode = SCALE;
+    this->need_clear = true;
+    this->isDrawing = true;
 }
 
 /********************************************************************************
@@ -445,7 +494,7 @@ void MainWindow::translate(QPoint dest){
 }
 
 /****************************************************************************
- ******************************* 旋转 ************************************
+ ******************************* 旋转 ***************************************
  ***************************************************************************/
 void MainWindow::rotate(QPoint base, QPoint dest){
     for(auto &index: selected_line){
@@ -459,6 +508,20 @@ void MainWindow::rotate(QPoint base, QPoint dest){
     }
 }
 
+void MainWindow::scale(double value){
+    for(auto &index: selected_circle){
+        circles[index].scale(value);
+    }
+    for(auto &index: selected_line){
+        lines[index].scale(value);
+    }
+    for(auto &index: selected_ploy){
+        polys[index].scale(value);
+    }
+
+}
+
+
 void MainWindow::select_draw(QPainter &painter){
     for(auto &index: selected_line){
         lines[index].drawByBresenham(painter);
@@ -470,5 +533,18 @@ void MainWindow::select_draw(QPainter &painter){
         polys[index].draw(painter);
     }
 }
+
+void MainWindow::select_clear_indarwimg(QPainter &painter){
+    for(auto &index: selected_line){
+        lines[index].clear(painter);
+    }
+    for(auto &index: selected_circle){
+        circles[index].clear(painter);
+    }
+    for(auto &index: selected_ploy){
+        polys[index].clear(painter);
+    }
+}
+
 
 
