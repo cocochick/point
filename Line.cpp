@@ -1,4 +1,9 @@
 #include "Line.h"
+#include "method.h"
+#include <Eigen/Eigen>
+#include <Eigen/Dense>
+
+using namespace Eigen;
 
 Line::Line(int xS, int yS, int xE, int yE):
      start(xS, yS), end(xE, yE) {pen = QPen(Qt::black,2);}
@@ -135,4 +140,36 @@ void Line::clear(QPainter &painter){
     painter.setPen(tmp);
     drawByBresenham(painter);
     painter.setPen(pen);
+}
+
+void Line::rotate(int x, int y, int dest_x, int dest_y){
+    int mid_x = (start.x()+end.x())/2;
+    int mid_y = (start.y()+end.y())/2;
+    double angle = get_angle(mid_x,mid_y,dest_x,dest_y,x,y);
+    double tx = x; double ty = y;
+    Matrix<double,3,3>  trans_org{
+        {1, 0, tx},
+        {0 ,1 ,ty},
+        {0 ,0 ,1}};
+    Matrix<double,3,3> rotate_M{
+        {cos(angle), -sin(angle), 0},
+        {sin(angle), cos(angle), 0},
+        {0, 0, 1}};
+    Matrix<double,3,3> trans_later{
+        {1, 0, -tx},
+        {0 ,1 ,-ty},
+        {0 ,0 ,1}};
+    // 旋转矩阵
+    Matrix<double,3,3> M = trans_org * rotate_M * trans_later;
+    // start
+    Matrix<double,3, 1> org_start{(double)start.x(),(double)start.y(),1};
+    Matrix<double,3,1> res_start = M * org_start;
+    start.setX(int(res_start(0,0)+0.5));
+    start.setY(int(res_start(1,0)+0.5));
+    // end
+    Matrix<double,3, 1> org_end{(double)end.x(),(double)end.y(),1};
+    Matrix<double,3,1> res_end = M * org_end;
+    end.setX(int(res_end(0,0)+0.5));
+    end.setY(int(res_end(1,0)+0.5));
+
 }

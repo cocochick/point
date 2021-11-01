@@ -16,7 +16,6 @@ public:
 
     Line(int xS, int yS, int xE, int yE);
     Line(const Line& l);
-
     Line(QPoint s, QPoint e);
 
     void set( QPoint s, QPoint e) {
@@ -42,6 +41,7 @@ public:
     QPoint End() const{return this->end;}
 
     void translate(int x=0, int y=0);
+    void rotate(int x, int y, int dest_x, int dest_y);
     void clear(QPainter &painter);
 
 };

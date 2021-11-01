@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     temppix = pix;
     temppix.fill();
     push_leftbutton = false;
+    push_leftbutton_twice = false;
     start = QPoint(0,0);
     end = QPoint(0,0);
     tmp = QPoint(0,0);
@@ -30,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->select, SIGNAL(clicked()), this, SLOT(setMode_Select()));
     connect(ui->Delall, SIGNAL(clicked()), this, SLOT(clearAll()));
     connect(ui->move, SIGNAL(clicked()), this, SLOT(setMode_Move()));
+    connect(ui->rotate, SIGNAL(clicked()), this, SLOT(setMode_Rotate()));
 }
 
 MainWindow::~MainWindow(){
@@ -43,7 +45,11 @@ void MainWindow::paintEvent(QPaintEvent *){
         temppix = pix;
         QPainter ptmp(&temppix);
         switch(mode){
-            case POLYGEN:
+            case POLYGEN:{
+                Line(this->start,this->end).drawByBresenham(ptmp);
+                pix = temppix;
+                break;
+            }
             case LINE:{
                 Line(this->start,this->end).drawByBresenham(ptmp);
                 break;
@@ -68,7 +74,7 @@ void MainWindow::paintEvent(QPaintEvent *){
             case SCALE:{
             }
             case ROTATE:{
-
+                select_draw(ptmp);
             }
         }
         painter.drawPixmap(0, 0, temppix);
@@ -98,7 +104,6 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
     if(e->button()==Qt::LeftButton){
         switch(mode){
             case LINE:
-            case SELECT:
             case CIRCLE:{
                 this->start = e->pos();
                 this->end = this->start;
@@ -119,7 +124,7 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
                     this ->start = this->end;
                     this ->end = e->pos();
                     points.push_back(this->end);
-                    isDrawing = false;
+                    // isDrawing = false;
                     this->update(this->rect());
                     // std::cout<<"2"<<std::endl;
                 }
@@ -129,6 +134,16 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
             }
             case FILL:{
             }
+            case SELECT:{
+                this->selected_circle.clear();
+                this->selected_line.clear();
+                this->selected_ploy.clear();
+                this->start = e->pos();
+                this->end = this->start;
+                this->isDrawing = true;
+                this->push_leftbutton = true;
+                break;
+            }
             case MOVE:{
                 this->isDrawing = true;
                 this->update(this->rect());
@@ -137,7 +152,21 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
             case SCALE:{
             }
             case ROTATE:{
-
+                if(!push_leftbutton){
+                    this->isDrawing = true;
+                    this->push_leftbutton = true;
+                    this->start = e->pos();
+                    this->push_leftbutton_twice = false;
+                    //this->end = this->start;
+                    //this->update(this->rect());
+                }else{
+                    this->push_leftbutton_twice = true;
+                    this->isDrawing = true;
+                    this->end = e->pos();
+                    rotate(start,end);
+                    this->update(this->rect());
+                }
+                break;
             }
         }
 
@@ -177,7 +206,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e){
          case SCALE:{
          }
          case ROTATE:{
-
+            if(push_leftbutton_twice){
+                rotate(start,e->pos());
+                this->update(this->rect());
+            }
+            break;
          }
      }
 }
@@ -214,6 +247,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
             }
             case SELECT:{
                 isDrawing = false;
+                this->push_leftbutton = false;
                 get_select(start,end);
                 std::cout<<selected_line.size()<<std::endl<<selected_circle.size()<<std::endl<<selected_ploy.size()<<std::endl;
                 this->update(this->rect());
@@ -228,6 +262,14 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
             case SCALE:{
             }
             case ROTATE:{
+                if(push_leftbutton_twice){
+                    this->isDrawing = false;
+                    this->push_leftbutton = false;
+                    this->push_leftbutton_twice = false;
+                    //rotate(start,e->pos());
+                    this->update(this->rect());
+                }
+                break;
             }
         }
       }
@@ -337,6 +379,10 @@ void MainWindow::setMode_Move(){
     this->mode = MOVE;
 }
 
+void MainWindow::setMode_Rotate(){
+    this->mode = ROTATE;
+}
+
 /********************************************************************************
  **************************** 选区 ***********************************************
  ********************************************************************************/
@@ -398,6 +444,21 @@ void MainWindow::translate(QPoint dest){
     }
 }
 
+/****************************************************************************
+ ******************************* 旋转 ************************************
+ ***************************************************************************/
+void MainWindow::rotate(QPoint base, QPoint dest){
+    for(auto &index: selected_line){
+        lines[index].rotate(base.x(),base.y(),dest.x(),dest.y());
+    }
+    for(auto &index: selected_circle){
+        circles[index].rotate(base.x(),base.y(),dest.x(),dest.y());
+    }
+    for(auto &index: selected_ploy){
+        polys[index].rotate(base.x(),base.y(),dest.x(),dest.y());
+    }
+}
+
 void MainWindow::select_draw(QPainter &painter){
     for(auto &index: selected_line){
         lines[index].drawByBresenham(painter);
@@ -409,3 +470,5 @@ void MainWindow::select_draw(QPainter &painter){
         polys[index].draw(painter);
     }
 }
+
+

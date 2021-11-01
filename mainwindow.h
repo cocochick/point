@@ -40,6 +40,7 @@ private:
     QPixmap temppix; //双缓冲
     bool isDrawing; // 正在绘图
     bool push_leftbutton;
+    bool push_leftbutton_twice;
     std::vector<Line> lines;
     std::vector<Polygen> polys;
     std::vector<Circle> circles;
@@ -52,6 +53,7 @@ private:
     void get_select(QPoint start, QPoint end);
     static bool inbox(QPoint p,QPoint left_up, QPoint right_down);
     void translate(QPoint dest);
+    void rotate(QPoint base, QPoint dest);
     void select_draw(QPainter &painter);
 
 public slots:
@@ -62,6 +64,7 @@ public slots:
     void setMode_Curve();
     void setMode_Select();
     void setMode_Move();
+    void setMode_Rotate();
     void clearAll();
 
 

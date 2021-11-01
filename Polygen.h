@@ -15,12 +15,12 @@ public:
     Polygen(std::vector<QPoint> p);
     //Polygen(const QPoint &cen, int r);
 
-private:
 public:
     void draw(QPainter &painter);
     void setVertex();
     std::vector<QPoint> getPoint() const;
     void translate(int x, int y);
+    void rotate(int x, int y, int dest_x, int dest_y);
 };
 
 

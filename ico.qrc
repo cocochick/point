@@ -7,5 +7,6 @@
         <file>ico/move.png</file>
         <file>ico/pol.png</file>
         <file>ico/select.png</file>
+        <file>ico/rotate.png</file>
     </qresource>
 </RCC>

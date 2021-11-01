@@ -127,16 +127,13 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spinBox"/>
-     </item>
-     <item>
-      <widget class="QToolButton" name="toolButton_5">
+      <widget class="QToolButton" name="rotate">
        <property name="text">
         <string/>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>assets/ico/line.png</normaloff>assets/ico/line.png</iconset>
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/ico/rotate.png</normaloff>:/new/ico/ico/rotate.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -145,6 +142,9 @@
         </size>
        </property>
       </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="spinBox"/>
      </item>
      <item>
       <widget class="QToolButton" name="Delall">
