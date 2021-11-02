@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->move, SIGNAL(clicked()), this, SLOT(setMode_Move()));
     connect(ui->rotate, SIGNAL(clicked()), this, SLOT(setMode_Rotate()));
     connect(ui->scale, SIGNAL(clicked()), this, SLOT(setMode_Scale()));
+    connect(ui->bspline, SIGNAL(clicked()), this, SLOT(setMode_Bspline()));
 }
 
 MainWindow::~MainWindow(){
@@ -67,6 +68,8 @@ void MainWindow::paintEvent(QPaintEvent *){
                 Curve(points).draw(ptmp);
                 break;
             }
+            case BSPLINE:{
+            }
             case FILL:{
             }
             case SELECT:{
@@ -86,7 +89,7 @@ void MainWindow::paintEvent(QPaintEvent *){
                     pix = temppix;
                     need_clear = false;
                 }
-                select_draw(ptmp);
+                select_draw_rotate(ptmp);
                 break;
 
         }
@@ -166,6 +169,8 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
                     this->update(this->rect());
                     // std::cout<<"2"<<std::endl;
                 }
+            }
+            case BSPLINE:{
             }
             case FILL:{
                 break;
@@ -256,6 +261,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e){
         case CURVE:{
             break;
         }
+        case BSPLINE:{
+        }
          case FILL:{
             break;
          }
@@ -304,6 +311,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
             }
             case CURVE:{
                 break;
+            }
+            case BSPLINE:{
             }
             case FILL:{
                 break;
@@ -360,6 +369,8 @@ void  MainWindow::mouseDoubleClickEvent(QMouseEvent *e){
             }
             case CURVE:{
             }
+            case BSPLINE:{
+            }
             case FILL:{
             }
             case SELECT:{
@@ -385,14 +396,14 @@ void MainWindow::wheelEvent(QWheelEvent *e){
             if(scale_value <1) scale_value = 1;
             this->scale_value+=0.05;
             this->update(this->rect());
-            this->scale(scale_value);
+            this->scale_diawing(scale_value);
         }else{
-            if(scale_value>1) scale_value = 1;
-            if(scale_value-0.1 > 0.8){
+            // if(scale_value>1) scale_value = 1;
+            if(scale_value - 0.1 > 0.4){
                 this->scale_value-=0.05;
             }
             this->update(this->rect());
-            this->scale(scale_value);
+            this->scale_diawing(scale_value);
         }
     }
 }
@@ -401,6 +412,8 @@ void MainWindow::wheelEvent(QWheelEvent *e){
  ******************* 槽函数 ***************************************
  *****************************************************************/
 void MainWindow::setMode_Line(){
+
+
     this->mode = LINE;
     start = QPoint(0,0);
     end = QPoint(0,0);
@@ -490,6 +503,16 @@ void MainWindow::setMode_Scale(){
     this->isDrawing = true;
 }
 
+void MainWindow::setMode_Bspline(){
+    this->mode = BSPLINE;
+    start = QPoint(0,0);
+    end = QPoint(0,0);
+    tmp = QPoint(0,0);
+    this->isDrawing = false;
+    this->selected_circle.clear();
+    this->selected_line.clear();
+    this->selected_ploy.clear();
+}
 /********************************************************************************
  **************************** 选区 ***********************************************
  ********************************************************************************/
@@ -588,6 +611,10 @@ void MainWindow::rotate_drawing(QPoint base, QPoint dest){
     }
 }
 
+/****************************************************************************
+ ******************************* 缩放 ***************************************
+ ***************************************************************************/
+
 void MainWindow::scale(double value){
     for(auto &index: selected_circle){
         circles[index].scale(value);
@@ -601,6 +628,27 @@ void MainWindow::scale(double value){
 
 }
 
+void MainWindow::scale_diawing(double value){
+    for(auto &index: selected_line){
+        Line line_tmp = lines[index];
+        line_tmp.scale(value);
+        lines_tmp.push_back(line_tmp);
+    }
+    for(auto &index: selected_circle){
+        Circle cir_tmp = circles[index];
+        cir_tmp.scale(value);
+        circles_tmp.push_back(cir_tmp);
+    }
+    for(auto &index: selected_ploy){
+        Polygen pol_tmp = polys[index];
+        pol_tmp.scale(value);
+        polys_tmp.push_back(pol_tmp);
+    }
+}
+
+/****************************************************************************
+ ******************************* 缓冲区绘制 ***********************************
+ ***************************************************************************/
 
 void MainWindow::select_draw(QPainter &painter){
     for(auto &index: selected_line){
@@ -632,6 +680,9 @@ void MainWindow::select_draw_rotate(QPainter &painter){
     polys_tmp.clear();
 }
 
+/****************************************************************************
+ ******************************* 缓冲区清除 ***********************************
+ ***************************************************************************/
 void MainWindow::select_clear_indarwimg(QPainter &painter){
     for(auto &index: selected_line){
         lines[index].clear(painter);

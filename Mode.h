@@ -6,6 +6,7 @@ enum Mode{
     CIRCLE,
     POLYGEN,
     CURVE,
+    BSPLINE,
     FILL,
     SELECT,
     MOVE,

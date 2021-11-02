@@ -19,7 +19,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>440</width>
+      <width>471</width>
       <height>44</height>
      </rect>
     </property>
@@ -83,6 +83,23 @@
        <property name="icon">
         <iconset resource="ico.qrc">
          <normaloff>:/new/ico/ico/bzr.png</normaloff>:/new/ico/ico/bzr.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="bspline">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/ico/cvMoVdQ-adjust-spline-clipart.png</normaloff>:/new/ico/ico/cvMoVdQ-adjust-spline-clipart.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -186,33 +203,9 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_F">
-    <property name="title">
-     <string>图形(&amp;F)</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menu_Q">
-    <property name="title">
-     <string>曲线(&amp;Q)</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menu_T">
-    <property name="title">
-     <string>填充(&amp;T)</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menu_B">
-    <property name="title">
-     <string>变换(&amp;B)</string>
-    </property>
-   </widget>
-   <addaction name="menu_F"/>
-   <addaction name="menu_Q"/>
-   <addaction name="menu_T"/>
-   <addaction name="menu_B"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_Z">

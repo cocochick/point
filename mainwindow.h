@@ -71,6 +71,7 @@ private:
     void translate(QPoint dest);
     void rotate(QPoint base, QPoint dest);
     void rotate_drawing(QPoint base, QPoint dest);
+    void scale_diawing(double value);
     void scale(double value);
     void select_draw(QPainter &painter);
     void select_draw_rotate(QPainter &painter);
@@ -86,6 +87,7 @@ public slots:
     void setMode_Move();
     void setMode_Rotate();
     void setMode_Scale();
+    void setMode_Bspline();
     void clearAll();
 
 
