@@ -15,6 +15,7 @@ SOURCES += \
     Curve.cpp \
     Line.cpp \
     Polygen.cpp \
+    BSpline.cpp \
     main.cpp \
     mainwindow.cpp \
     method.cpp
@@ -25,6 +26,7 @@ HEADERS += \
     Line.h \
     Mode.h \
     Polygen.h \
+    BSpline.h \
     mainwindow.h \
     method.h
 
