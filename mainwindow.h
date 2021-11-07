@@ -9,6 +9,7 @@
 #include "Circle.h"
 #include "Polygen.h"
 #include "Curve.h"
+#include "BSpline.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -58,12 +59,14 @@ private:
     std::vector<Polygen> polys_tmp;
     std::vector<Circle> circles_tmp;
     std::vector<Curve> curves;
+    std::vector<BSpline> bsplines;
     std::vector<QPoint> points;
     std::set<size_t> selected_line;
     std::set<size_t> selected_ploy;
     std::set<size_t> selected_circle;
     float scale_value; // 缩放系数
     curPoint selected_curve;
+    curPoint selected_bspline;
 
 private:
     void get_select(QPoint start, QPoint end);
