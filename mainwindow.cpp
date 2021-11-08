@@ -88,6 +88,7 @@ void MainWindow::paintEvent(QPaintEvent *){
                 break;
             }
             case BSPLINE:{
+                BSpline(points).draw(ptmp);
                 break;
             }
             case FILL:{
@@ -131,6 +132,7 @@ void MainWindow::paintEvent(QPaintEvent *){
         for (auto beg =curves.begin();beg!=curves.end();++beg){
             beg->draw(ppix);
         }
+        for (auto beg =bsplines.begin();beg!=bsplines.end();++beg){}
         for (auto beg =ovals.begin();beg!=ovals.end();++beg){
             beg->draw(ppix);
         }
@@ -194,8 +196,25 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
                     this->update(this->rect());
                     // std::cout<<"2"<<std::endl;
                 }
+                break;
             }
             case BSPLINE:{
+                if(!push_leftbutton){
+                    if(!points.empty()){points.clear();}
+                    tmp = e->pos();
+                    points.push_back(tmp);
+                    isDrawing = true;
+                    push_leftbutton = true;
+                    this->update(this->rect());
+                }
+                else {
+                    tmp = e->pos();
+                    points.push_back(tmp);
+                    // isDrawing = false;
+                    this->update(this->rect());
+                    // std::cout<<"2"<<std::endl;
+                }
+                break;
             }
             case FILL:{
                 break;
@@ -222,6 +241,17 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
                         }
                         else{
                             selected_curve.curve_num = -1;
+                        }
+                }
+                for(size_t i = 0; i < bsplines.size(); i++){
+                    for(size_t j = 0; j < bsplines[i].point.size(); j++)
+                        if(abs(tmp.x() - bsplines[i].point[j].x()) <= 10
+                                && abs(tmp.y() - bsplines[i].point[j].y()) <= 10){
+                            selected_bspline = curPoint(i,j);
+                            break;
+                        }
+                        else{
+                            selected_bspline.curve_num = -1;
                         }
                 }
                 this->update(this->rect());
@@ -254,6 +284,15 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
             case CURVE:{
                 Curve cur(points);
                 curves.push_back(cur);
+                points.clear();
+                push_leftbutton = false;
+                isDrawing = false;
+                this->update(this->rect());
+                break;
+            }
+            case BSPLINE:{
+                BSpline bsp(points);
+                bsplines.push_back(bsp);
                 points.clear();
                 push_leftbutton = false;
                 isDrawing = false;
@@ -356,6 +395,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
                 break;
             }
             case BSPLINE:{
+                break;
             }
             case FILL:{
                 break;
@@ -668,13 +708,16 @@ void MainWindow::translate(QPoint dest){
     for (auto &index: selected_ploy){
         polys[index].translate(dest.x(),dest.y());
     }
+    if(selected_curve.curve_num >= 0)
+        curves[selected_curve.curve_num].translate(dest.x(),dest.y(), selected_curve.point_num);
+    if(selected_bspline.curve_num >= 0)
+        bsplines[selected_bspline.curve_num].translate(dest.x(),dest.y(), selected_bspline.point_num);
     for (auto &index: selected_oval){
         ovals[index].translate(dest.x(),dest.y());
     }
     if(selected_curve.curve_num < 0)
         return;
     curves[selected_curve.curve_num].translate(dest.x(),dest.y(), selected_curve.point_num);
-
 }
 
 /****************************************************************************
@@ -753,6 +796,12 @@ void MainWindow::select_draw(QPainter &painter){
     for(auto &index: selected_ploy){
         polys[index].draw(painter);
     }
+
+    if(selected_curve.curve_num >= 0)
+        curves[selected_curve.curve_num].draw(painter);
+    if(selected_bspline.curve_num >= 0)
+        bsplines[selected_bspline.curve_num].draw(painter);
+
     for(auto &index: selected_oval){
         ovals[index].draw(painter);
     }

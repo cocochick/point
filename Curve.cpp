@@ -33,7 +33,12 @@ void Curve::draw(QPainter &painter){
         painter.drawPoint(static_cast<int>(DeCasteljau[0].x + 0.5), static_cast<int>(DeCasteljau[0].y + 0.5));
         t += 0.0001;
     }
+    /*for(int i = 0; i < control_point.size() - 1; i++){
+        Line line(control_point[i], control_point[i + 1]);
+        line.drawByBresenham(painter);
+    }*/
 }
+
 
 
 void Curve::translate(int x, int y, int p){

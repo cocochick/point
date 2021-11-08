@@ -1,4 +1,4 @@
-﻿#ifndef MAINWINDOW_H
+#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -9,6 +9,7 @@
 #include "Circle.h"
 #include "Polygen.h"
 #include "Curve.h"
+#include "BSpline.h"
 #include "Rect.h"
 #include "Oval.h"
 
@@ -62,8 +63,9 @@ private:
     std::vector<Line> lines_tmp;
     std::vector<Polygen> polys_tmp;
     std::vector<Circle> circles_tmp;
+    std::vector<Curve> curves;
+    std::vector<BSpline> bsplines;
     std::vector<Oval> ovals_tmp;
-
 
     std::vector<QPoint> points;
     std::set<size_t> selected_line;
@@ -71,6 +73,8 @@ private:
     std::set<size_t> selected_circle;
     std::set<size_t> selected_oval;
     curPoint selected_curve;
+
+    curPoint selected_bspline;
     QPen pen;
 
 
