@@ -14,8 +14,11 @@ SOURCES += \
     Circle.cpp \
     Curve.cpp \
     Line.cpp \
+    Oval.cpp \
     Polygen.cpp \
+
     BSpline.cpp \
+    Rect.cpp \
     main.cpp \
     mainwindow.cpp \
     method.cpp
@@ -25,8 +28,10 @@ HEADERS += \
     Curve.h \
     Line.h \
     Mode.h \
+    Oval.h \
     Polygen.h \
     BSpline.h \
+    Rect.h \
     mainwindow.h \
     method.h
 

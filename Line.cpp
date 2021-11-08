@@ -5,16 +5,17 @@
 
 using namespace Eigen;
 
-Line::Line(int xS, int yS, int xE, int yE):
-     start(xS, yS), end(xE, yE) {pen = QPen(Qt::black,2);}
+Line::Line(int xS, int yS, int xE, int yE,QPen &pen_value):
+     start(xS, yS), end(xE, yE) {pen = pen_value;}
 
-Line::Line(QPoint s, QPoint e):
-     start(s), end(e) {pen = QPen(Qt::black,2);}
+Line::Line(QPoint s, QPoint e, QPen &pen_value):
+     start(s), end(e) {pen = pen_value;}
 
 Line::Line(const Line& l) {
     pen = l.getpen();
     start = l.Start();
     end = l.End();
+    pen = l.pen;
 }
 
 void Line::DDA(int xS, int yS, int xE, int yE,QPainter &painter) {
@@ -121,7 +122,8 @@ void Line::Bresenham(int xS, int yS, int xE, int yE,QPainter &painter) {
 
 void Line::drawByBresenham(QPainter &painter){
     painter.setPen(pen);
-    Bresenham(start.x(), start.y(), end.x(), end.y(),painter);
+    painter.drawLine(start,end);
+    //Bresenham(start.x(), start.y(), end.x(), end.y(),painter);
 }
 
 

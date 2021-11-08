@@ -13,7 +13,7 @@ public:
     std::vector<Line> vertex;   //边集
 public:
     Polygen(){}
-    Polygen(std::vector<QPoint> p);
+    Polygen(std::vector<QPoint> p, QPen &pen_value);
     Polygen(const Polygen& p);
     //Polygen(const QPoint &cen, int r);
 
@@ -25,6 +25,7 @@ public:
     void rotate(int x, int y, int dest_x, int dest_y);
     void scale(double value);
     void clear(QPainter &painter);
+    virtual ~Polygen();
 };
 
 

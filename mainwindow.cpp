@@ -5,6 +5,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <iostream>
+#include <QColorDialog>
 
 bool inbox(QPoint p,QPoint left_up, QPoint right_down);
 
@@ -24,7 +25,12 @@ MainWindow::MainWindow(QWidget *parent)
     start = QPoint(0,0);
     end = QPoint(0,0);
     tmp = QPoint(0,0);
-    scale_value = 1;
+    pen = QPen(Qt::black,2);
+    // penwth设初值
+    ui->penwth->setRange(1, 10);
+    ui->penwth->setValue(2);
+
+
     //all in!!!!! ta ta kai
     connect(ui->Line, SIGNAL(clicked()), this, SLOT(setMode_Line()));
     connect(ui->Circle, SIGNAL(clicked()), this, SLOT(setMode_Circle()));
@@ -36,6 +42,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->rotate, SIGNAL(clicked()), this, SLOT(setMode_Rotate()));
     connect(ui->scale, SIGNAL(clicked()), this, SLOT(setMode_Scale()));
     connect(ui->bspline, SIGNAL(clicked()), this, SLOT(setMode_Bspline()));
+    connect(ui->penwth, SIGNAL(valueChanged(int)), this, SLOT(setValue_width(int)));
+    connect(ui->pentype, SIGNAL(currentIndexChanged(int)), this, SLOT(setPen_type(int)));
+    connect(ui->color, SIGNAL(clicked()), this, SLOT(setPen_pen()));
+    connect(ui->rubber, SIGNAL(clicked()), this, SLOT(rubber()));
+    connect(ui->rect, SIGNAL(clicked()), this, SLOT(setMode_Rect()));
+    connect(ui->oval, SIGNAL(clicked()), this, SLOT(setMode_Oval()));
 }
 
 MainWindow::~MainWindow(){
@@ -44,25 +56,32 @@ MainWindow::~MainWindow(){
 
 void MainWindow::paintEvent(QPaintEvent *){
     QPainter painter(this);
-
  //   painter.drawPixmap(0,0,pix);
     if(isDrawing){
         temppix = pix;
         QPainter ptmp(&temppix);
         switch(mode){
             case POLYGEN:{
-                Line(this->start,this->end).drawByBresenham(ptmp);
+                Line(this->start,this->end,pen).drawByBresenham(ptmp);
                 pix = temppix;
                 break;
             }
             case LINE:{
-                Line(this->start,this->end).drawByBresenham(ptmp);
+                Line(this->start,this->end,pen).drawByBresenham(ptmp);
                 break;
             }
             case CIRCLE:{
                int r =pow(pow(this->start.x()-this->end.x(),2)+pow(this->start.y()-this->end.y(),2),0.5);
-               Circle(this->start,r).draw(ptmp);
+               Circle(this->start,r,pen).draw(ptmp);
                break;
+            }
+            case RECT:{
+                Rect(this->start,this->end,pen).draw(ptmp);
+                break;
+            }
+            case OVAL:{
+                Oval(this->start,this->end,pen).draw(ptmp);
+                break;
             }
             case CURVE:{
                 Curve(points).draw(ptmp);
@@ -73,6 +92,7 @@ void MainWindow::paintEvent(QPaintEvent *){
                 break;
             }
             case FILL:{
+                break;
             }
             case SELECT:{
                 ptmp.setPen(QPen(Qt::blue,1,Qt::DashDotLine));
@@ -91,7 +111,7 @@ void MainWindow::paintEvent(QPaintEvent *){
                     pix = temppix;
                     need_clear = false;
                 }
-                select_draw_rotate(ptmp);
+                select_draw(ptmp);
                 break;
 
         }
@@ -112,7 +132,8 @@ void MainWindow::paintEvent(QPaintEvent *){
         for (auto beg =curves.begin();beg!=curves.end();++beg){
             beg->draw(ppix);
         }
-        for (auto beg =bsplines.begin();beg!=bsplines.end();++beg){
+        for (auto beg =bsplines.begin();beg!=bsplines.end();++beg){}
+        for (auto beg =ovals.begin();beg!=ovals.end();++beg){
             beg->draw(ppix);
         }
         painter.drawPixmap(0, 0, pix);
@@ -126,6 +147,8 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
     if(e->button()==Qt::LeftButton){
         switch(mode){
             case LINE:
+            case RECT:
+            case OVAL:
             case CIRCLE:{
                 this->start = e->pos();
                 this->end = this->start;
@@ -287,6 +310,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e){
      switch(mode){
          case LINE:
          case SELECT:
+         case RECT:
+         case OVAL:
          case CIRCLE:{
             if(push_leftbutton){
                 this->end = e->pos();
@@ -329,7 +354,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
       {
         switch(mode){
             case LINE:{
-                Line line(start,end);
+                Line line(start,end,pen);
                 lines.push_back(line);
                 isDrawing = false;    //结束绘图
                 push_leftbutton = false;
@@ -338,12 +363,28 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
             }
             case CIRCLE:{
                 int r =pow(pow(this->start.x()-this->end.x(),2)+pow(this->start.y()-this->end.y(),2),0.5);
-                Circle cir(start,r);
+                Circle cir(start,r,pen);
                 circles.push_back(cir);
                 isDrawing = false;    //结束绘图
                 push_leftbutton = false;
                 this->update(this->rect());
                 // std::cout<<"end"<<std::endl;
+                break;
+            }
+            case RECT:{
+                Rect rect(start,end,pen);
+                polys.push_back(rect);
+                isDrawing = false;    //结束绘图
+                push_leftbutton = false;
+                this->update(this->rect());
+                break;
+            }
+            case OVAL:{
+                Oval oval(start,end,pen);
+                ovals.push_back(oval);
+                isDrawing = false;    //结束绘图
+                push_leftbutton = false;
+                this->update(this->rect());
                 break;
             }
             case POLYGEN:{
@@ -395,37 +436,15 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
 
 void  MainWindow::mouseDoubleClickEvent(QMouseEvent *e){
     if(e->button() == Qt::LeftButton){
-        switch(mode){
-            case LINE:{
-            }
-            case CIRCLE:{
-            }
-            case POLYGEN:{
-                Polygen pol(points);
-                polys.push_back(pol);
-                points.clear();
-                push_leftbutton = false;
-                isDrawing = false;
-                this->update(this->rect());
-                break;
-            }
-            case CURVE:{
-            }
-            case BSPLINE:{
-            }
-            case FILL:{
-            }
-            case SELECT:{
-            }
-            case MOVE:{
-            }
-            case SCALE:{
-            }
-            case ROTATE:{
-
-            }
+        if(mode == POLYGEN){
+             Polygen pol(points,pen);
+             polys.push_back(pol);
+             points.clear();
+             push_leftbutton = false;
+             isDrawing = false;
+             this->update(this->rect());
         }
-    }
+   }
 }
 
 
@@ -435,17 +454,11 @@ void  MainWindow::mouseDoubleClickEvent(QMouseEvent *e){
 void MainWindow::wheelEvent(QWheelEvent *e){
     if(mode==SCALE){
         if(e->angleDelta().y() >0 ){
-            if(scale_value <1) scale_value = 1;
-            this->scale_value+=0.05;
             this->update(this->rect());
-            this->scale_diawing(scale_value);
+            this->scale(1.05);
         }else{
-            // if(scale_value>1) scale_value = 1;
-            if(scale_value - 0.1 > 0.4){
-                this->scale_value-=0.05;
-            }
             this->update(this->rect());
-            this->scale_diawing(scale_value);
+            this->scale(0.95);
         }
     }
 }
@@ -464,6 +477,7 @@ void MainWindow::setMode_Line(){
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
+    this->selected_oval.clear();
 }
 
 void MainWindow::setMode_Circle(){
@@ -475,6 +489,7 @@ void MainWindow::setMode_Circle(){
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
+    this->selected_oval.clear();
 }
 
 void MainWindow::setMode_Pol(){
@@ -486,6 +501,7 @@ void MainWindow::setMode_Pol(){
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
+    this->selected_oval.clear();
 }
 
 void  MainWindow::setMode_Curve(){
@@ -497,6 +513,7 @@ void  MainWindow::setMode_Curve(){
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
+    this->selected_oval.clear();
 }
 void  MainWindow::setMode_Select(){
     this->mode = SELECT;
@@ -507,6 +524,7 @@ void  MainWindow::setMode_Select(){
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
+    this->selected_oval.clear();
 }
 
 void MainWindow::clearAll(){
@@ -516,12 +534,15 @@ void MainWindow::clearAll(){
     this->circles.clear();
     this->polys.clear();
     this->curves.clear();
+    this->ovals.clear();
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
+    this->selected_oval.clear();
     lines_tmp.clear();
     circles_tmp.clear();
     polys_tmp.clear();
+    ovals_tmp.clear();
     this->isDrawing = false;
     pix = QPixmap(1000,800);
     pix.fill(Qt::white);
@@ -554,6 +575,67 @@ void MainWindow::setMode_Bspline(){
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
+    this->selected_oval.clear();
+}
+
+void MainWindow::setValue_width(int value){
+    if(value<0) value =1;
+    pen.setWidth(value);
+}
+
+void MainWindow::setPen_type(int index){
+    if(index == 0){
+        pen.setStyle(Qt::SolidLine);
+    }else if(index == 1){
+        pen.setStyle(Qt::DashLine);
+    }else if(index == 2){
+        pen.setStyle(Qt::DotLine);
+    }
+}
+
+void MainWindow::setPen_pen(){
+    QColor color = QColorDialog::getColor(Qt::black, this);
+    pen.setColor(color);
+}
+
+void MainWindow::rubber(){
+     for(auto &index: selected_line){
+         lines[index]=Line(0,0,0,0,pen);
+     }
+        for(auto &index: selected_circle){
+         circles[index] = Circle(0,0,0,pen);
+     }
+     for(auto &index: selected_ploy){
+         polys[index] = Polygen(std::vector<QPoint>{QPoint(0,0)}, pen);
+     }
+     for(auto &index: selected_oval){
+         ovals[index] = Oval(QPoint(0,0),QPoint(0,0), pen);
+     }
+     this->update(this->rect());
+}
+
+void MainWindow::setMode_Rect(){
+    this->mode = RECT;
+    start = QPoint(0,0);
+    end = QPoint(0,0);
+    tmp = QPoint(0,0);
+    this->isDrawing = false;
+    this->selected_circle.clear();
+    this->selected_line.clear();
+    this->selected_ploy.clear();
+    this->selected_oval.clear();
+}
+
+void MainWindow::setMode_Oval(){
+    this->mode = OVAL;
+    start = QPoint(0,0);
+    end = QPoint(0,0);
+    tmp = QPoint(0,0);
+    this->isDrawing = false;
+    this->selected_circle.clear();
+    this->selected_line.clear();
+    this->selected_ploy.clear();
+    this->selected_oval.clear();
 }
 /********************************************************************************
  **************************** 选区 ***********************************************
@@ -591,6 +673,18 @@ void MainWindow::get_select(QPoint left_up, QPoint right_down){
         if(in_box) selected_ploy.insert(i);
         ++i;
     }
+    i = 0;
+    for (auto beg =ovals.begin();beg!=ovals.end();++beg){
+        if(inbox(beg->getCenter(),left_up,right_down)
+                && inbox(beg->getCenter()+QPoint(0,beg->getRadius_y()),left_up,right_down)
+                && inbox(beg->getCenter()+QPoint(0,-beg->getRadius_y()),left_up,right_down)
+                && inbox(beg->getCenter()+QPoint(beg->getRadius_x(),0),left_up,right_down)
+                && inbox(beg->getCenter()+QPoint(-beg->getRadius_x(),0),left_up,right_down)){
+            selected_oval.insert(i);
+        }
+        ++i;
+    }
+
 }
 
 bool MainWindow::inbox(QPoint p,QPoint left_up, QPoint right_down){
@@ -618,6 +712,12 @@ void MainWindow::translate(QPoint dest){
         curves[selected_curve.curve_num].translate(dest.x(),dest.y(), selected_curve.point_num);
     if(selected_bspline.curve_num >= 0)
         bsplines[selected_bspline.curve_num].translate(dest.x(),dest.y(), selected_bspline.point_num);
+    for (auto &index: selected_oval){
+        ovals[index].translate(dest.x(),dest.y());
+    }
+    if(selected_curve.curve_num < 0)
+        return;
+    curves[selected_curve.curve_num].translate(dest.x(),dest.y(), selected_curve.point_num);
 }
 
 /****************************************************************************
@@ -632,6 +732,9 @@ void MainWindow::rotate(QPoint base, QPoint dest){
     }
     for(auto &index: selected_ploy){
         polys[index].rotate(base.x(),base.y(),dest.x(),dest.y());
+    }
+    for(auto &index: selected_oval){
+        ovals[index].rotate(base.x(),base.y(),dest.x(),dest.y());
     }
 }
 
@@ -651,6 +754,11 @@ void MainWindow::rotate_drawing(QPoint base, QPoint dest){
         pol_tmp.rotate(base.x(),base.y(),dest.x(),dest.y());
         polys_tmp.push_back(pol_tmp);
     }
+    for(auto &index: selected_oval){
+        Oval ovl_tmp = ovals[index];
+        ovl_tmp.rotate(base.x(),base.y(),dest.x(),dest.y());
+        ovals_tmp.push_back(ovl_tmp);
+    }
 }
 
 /****************************************************************************
@@ -667,26 +775,12 @@ void MainWindow::scale(double value){
     for(auto &index: selected_ploy){
         polys[index].scale(value);
     }
+    for(auto &index: selected_oval){
+        ovals[index].scale(value);
+    }
 
 }
 
-void MainWindow::scale_diawing(double value){
-    for(auto &index: selected_line){
-        Line line_tmp = lines[index];
-        line_tmp.scale(value);
-        lines_tmp.push_back(line_tmp);
-    }
-    for(auto &index: selected_circle){
-        Circle cir_tmp = circles[index];
-        cir_tmp.scale(value);
-        circles_tmp.push_back(cir_tmp);
-    }
-    for(auto &index: selected_ploy){
-        Polygen pol_tmp = polys[index];
-        pol_tmp.scale(value);
-        polys_tmp.push_back(pol_tmp);
-    }
-}
 
 /****************************************************************************
  ******************************* 缓冲区绘制 ***********************************
@@ -702,10 +796,18 @@ void MainWindow::select_draw(QPainter &painter){
     for(auto &index: selected_ploy){
         polys[index].draw(painter);
     }
+
     if(selected_curve.curve_num >= 0)
         curves[selected_curve.curve_num].draw(painter);
     if(selected_bspline.curve_num >= 0)
         bsplines[selected_bspline.curve_num].draw(painter);
+
+    for(auto &index: selected_oval){
+        ovals[index].draw(painter);
+    }
+    if(selected_curve.curve_num < 0)
+        return;
+    curves[selected_curve.curve_num].draw(painter);
 }
 
 void MainWindow::select_draw_rotate(QPainter &painter){
@@ -718,9 +820,13 @@ void MainWindow::select_draw_rotate(QPainter &painter){
     for(auto &poly:polys_tmp){
         poly.draw(painter);
     }
+    for(auto &ovl:ovals_tmp){
+        ovl.draw(painter);
+    }
     lines_tmp.clear();
     circles_tmp.clear();
     polys_tmp.clear();
+    ovals_tmp.clear();
 }
 
 /****************************************************************************
@@ -736,6 +842,10 @@ void MainWindow::select_clear_indarwimg(QPainter &painter){
     for(auto &index: selected_ploy){
         polys[index].clear(painter);
     }
+    for(auto &index: selected_oval){
+        ovals[index].clear(painter);
+    }
+
 }
 
 

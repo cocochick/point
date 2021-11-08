@@ -5,16 +5,17 @@
 
 using namespace Eigen;
 
-Circle::Circle(int x, int y, int r):
-    center(x,y), radius(r){pen = QPen(Qt::black,2);}
+Circle::Circle(int x, int y, int r,QPen &pen_value):
+    center(x,y), radius(r){pen = pen_value;}
 
-Circle::Circle(const QPoint &cen, int r):
-    center(cen),radius(r){pen = QPen(Qt::black,2);}
+Circle::Circle(const QPoint &cen, int r,QPen &pen_value):
+    center(cen),radius(r){pen = pen_value;}
 
 Circle::Circle(const Circle& c){
     pen = c.getpen();
     center = c.getCenter();
     radius = c.getRadius();
+    pen = c.pen;
 }
 
 void Circle::midpoint(int xCtr, int yCtr,QPainter &painter) {

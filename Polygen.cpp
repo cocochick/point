@@ -5,13 +5,13 @@
 
 using namespace Eigen;
 
-Polygen::Polygen(std::vector<QPoint> p):point(p) {
-    pen = QPen(Qt::black,2);
+Polygen::Polygen(std::vector<QPoint> p,QPen &pen_value):point(p) {
+    pen = pen_value;
     for (auto iter = p.begin(); iter != p.end() - 1; iter++) {
-        Line line(*iter, *(iter + 1));
+        Line line(*iter, *(iter + 1),pen_value);
         vertex.push_back(line);
     }
-    Line line(*p.begin(), *(p.end() - 1));
+    Line line(*p.begin(), *(p.end() - 1),pen_value);
     vertex.push_back(line);
 }
 
@@ -33,10 +33,10 @@ Polygen::Polygen(const Polygen& p){
 void Polygen::setVertex(){   
     vertex.clear();
     for (auto iter = point.begin(); iter != point.end() - 1; iter++) {
-        Line line(*iter, *(iter + 1));
+        Line line(*iter, *(iter + 1),pen);
         vertex.push_back(line);
     }
-    Line line(*point.begin(), *(point.end() - 1));
+    Line line(*point.begin(), *(point.end() - 1),pen);
     vertex.push_back(line);
 }
 
@@ -97,4 +97,8 @@ void Polygen::scale(double value){
         p = value*(p-mid)+mid;
     }
     setVertex();
+}
+
+Polygen::~Polygen(){
+
 }

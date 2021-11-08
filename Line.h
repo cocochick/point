@@ -14,9 +14,9 @@ public:
 
     Line();
 
-    Line(int xS, int yS, int xE, int yE);
+    Line(int xS, int yS, int xE, int yE , QPen &pen_value);
     Line(const Line& l);
-    Line(QPoint s, QPoint e);
+    Line(QPoint s, QPoint e, QPen &pen_value);
 
     void set( QPoint s, QPoint e) {
         start = s;
