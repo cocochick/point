@@ -10,5 +10,9 @@
         <file>ico/rotate.png</file>
         <file>ico/scale.png</file>
         <file>ico/cvMoVdQ-adjust-spline-clipart.png</file>
+        <file>ico/color.png</file>
+        <file>ico/rubber.png</file>
+        <file>ico/rect.png</file>
+        <file>ico/oval.png</file>
     </qresource>
 </RCC>

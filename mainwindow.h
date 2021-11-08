@@ -9,6 +9,8 @@
 #include "Circle.h"
 #include "Polygen.h"
 #include "Curve.h"
+#include "Rect.h"
+#include "Oval.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -54,16 +56,24 @@ private:
     std::vector<Line> lines;
     std::vector<Polygen> polys;
     std::vector<Circle> circles;
+    std::vector<Oval> ovals;
+    std::vector<Curve> curves;
+
     std::vector<Line> lines_tmp;
     std::vector<Polygen> polys_tmp;
     std::vector<Circle> circles_tmp;
-    std::vector<Curve> curves;
+    std::vector<Oval> ovals_tmp;
+
+
     std::vector<QPoint> points;
     std::set<size_t> selected_line;
     std::set<size_t> selected_ploy;
     std::set<size_t> selected_circle;
-    float scale_value; // 缩放系数
+    std::set<size_t> selected_oval;
     curPoint selected_curve;
+    QPen pen;
+
+
 
 private:
     void get_select(QPoint start, QPoint end);
@@ -88,7 +98,13 @@ public slots:
     void setMode_Rotate();
     void setMode_Scale();
     void setMode_Bspline();
+    void setMode_Rect();
+    void setMode_Oval();
+    void setValue_width(int value);
+    void setPen_type(int index);
+    void setPen_pen();
     void clearAll();
+    void rubber();
 
 
 };

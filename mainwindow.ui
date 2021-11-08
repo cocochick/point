@@ -19,7 +19,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>471</width>
+      <width>758</width>
       <height>44</height>
      </rect>
     </property>
@@ -49,6 +49,40 @@
        <property name="icon">
         <iconset resource="ico.qrc">
          <normaloff>:/new/ico/ico/circle.png</normaloff>:/new/ico/ico/circle.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="oval">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/ico/oval.png</normaloff>:/new/ico/ico/oval.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="rect">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/ico/rect.png</normaloff>:/new/ico/ico/rect.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -178,6 +212,75 @@
       </widget>
      </item>
      <item>
+      <widget class="QSpinBox" name="penwth">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="pentype">
+       <item>
+        <property name="text">
+         <string>实线</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>虚线</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>点画线</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="color">
+       <property name="text">
+        <string>sas</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/ico/color.png</normaloff>:/new/ico/ico/color.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="rubber">
+       <property name="text">
+        <string>sas</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ico.qrc">
+         <normaloff>:/new/ico/ico/rubber.png</normaloff>:/new/ico/ico/rubber.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QToolButton" name="Delall">
        <property name="text">
         <string/>
@@ -203,7 +306,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

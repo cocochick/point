@@ -10,8 +10,8 @@ private:
     int radius;   //半径
 public:
     Circle();
-    Circle(int x, int y, int r);
-    Circle(const QPoint &cen, int r);
+    Circle(int x, int y, int r,QPen &pen_value);
+    Circle(const QPoint &cen, int r, QPen &pen_value);
     Circle(const Circle& c);
     void translate(int x=0, int y=0);
     void rotate(int x, int y, int dest_x, int dest_y);

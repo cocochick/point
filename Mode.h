@@ -7,6 +7,8 @@ enum Mode{
     POLYGEN,
     CURVE,
     BSPLINE,
+    RECT,
+    OVAL,
     FILL,
     SELECT,
     MOVE,

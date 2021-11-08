@@ -10,9 +10,10 @@ Curve::Curve(std::vector<QPoint> p):control_point(p) {};
 
 void Curve::draw(QPainter &painter){
     double t = 0;
+    QPen pentmp = QPen(Qt::black,2);
     int n = control_point.size();
     for(auto x : control_point){
-        Circle(x, 5).draw(painter);
+        Circle(x, 5, pentmp).draw(painter);
     }
     if(n <= 1)
         return;
