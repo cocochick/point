@@ -17,6 +17,7 @@ public:
 
 public:
     void draw(QPainter &painter);
+    void translate(int x, int y);
     void translate(int x, int y, int p);
 };
 

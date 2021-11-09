@@ -1,4 +1,4 @@
-#include "Oval.h"
+﻿#include "Oval.h"
 #include "method.h"
 #include <Eigen/Eigen>
 #include <Eigen/Dense>
@@ -67,7 +67,9 @@ int Oval::getRadius_y(){
 }
 
 void Oval::translate(int x, int y){
-    center = QPoint(x,y);
+    //center = QPoint(x,y);
+    center.setX(center.x() + x);
+    center.setY(center.y() + y);
 }
 
 void Oval::rotate(int x, int y, int dest_x, int dest_y){

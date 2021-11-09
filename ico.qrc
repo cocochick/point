@@ -14,5 +14,6 @@
         <file>ico/rubber.png</file>
         <file>ico/rect.png</file>
         <file>ico/oval.png</file>
+        <file>ico/fit.png</file>
     </qresource>
 </RCC>

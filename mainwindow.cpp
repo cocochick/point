@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     end = QPoint(0,0);
     tmp = QPoint(0,0);
     pen = QPen(Qt::black,2);
+    move_start = QPoint(0, 0);
     // penwth设初值
     ui->penwth->setRange(1, 10);
     ui->penwth->setValue(2);
@@ -42,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->rotate, SIGNAL(clicked()), this, SLOT(setMode_Rotate()));
     connect(ui->scale, SIGNAL(clicked()), this, SLOT(setMode_Scale()));
     connect(ui->bspline, SIGNAL(clicked()), this, SLOT(setMode_Bspline()));
+    connect(ui->fit, SIGNAL(clicked()), this, SLOT(setMode_Fit()));
     connect(ui->penwth, SIGNAL(valueChanged(int)), this, SLOT(setValue_width(int)));
     connect(ui->pentype, SIGNAL(currentIndexChanged(int)), this, SLOT(setPen_type(int)));
     connect(ui->color, SIGNAL(clicked()), this, SLOT(setPen_pen()));
@@ -91,6 +93,10 @@ void MainWindow::paintEvent(QPaintEvent *){
                 BSpline(points).draw(ptmp);
                 break;
             }
+            case FIT:{
+                BSplineFit(points).draw(ptmp);
+                break;
+            }
             case FILL:{
                 break;
             }
@@ -136,6 +142,11 @@ void MainWindow::paintEvent(QPaintEvent *){
         for (auto beg =bsplines.begin();beg!=bsplines.end();++beg){
             beg->draw(ppix);
         }
+
+        for (auto beg =fits.begin();beg!=fits.end();++beg){
+            beg->draw(ppix);
+        }
+
         for (auto beg =ovals.begin();beg!=ovals.end();++beg){
             beg->draw(ppix);
         }
@@ -219,6 +230,24 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
                 }
                 break;
             }
+            case FIT:{
+                if(!push_leftbutton){
+                    if(!points.empty()){points.clear();}
+                    tmp = e->pos();
+                    points.push_back(tmp);
+                    isDrawing = true;
+                    push_leftbutton = true;
+                    this->update(this->rect());
+                }
+                else {
+                    tmp = e->pos();
+                    points.push_back(tmp);
+                    // isDrawing = false;
+                    this->update(this->rect());
+                    // std::cout<<"2"<<std::endl;
+                }
+                break;
+            }
             case FILL:{
                 break;
             }
@@ -235,27 +264,36 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
             case MOVE:{
                 this->isDrawing = true;
                 tmp = e->pos();
-                for(size_t i = 0; i < curves.size(); i++){
-                    for(size_t j = 0; j < curves[i].control_point.size(); j++)
-                        if(abs(tmp.x() - curves[i].control_point[j].x()) <= 10
-                                && abs(tmp.y() - curves[i].control_point[j].y()) <= 10){
-                            selected_curve = curPoint(i,j);
-                            break;
-                        }
-                        else{
-                            selected_curve.curve_num = -1;
-                        }
+                if(move_start == QPoint(0, 0))
+                    move_start = tmp;
+                if(selected_bsplines.empty() && selected_circle.empty() && selected_curves.empty() && selected_fits.empty()
+                        && selected_line.empty() && selected_oval.empty() && selected_ploy.empty()){
+                    for(size_t i = 0; i < curves.size(); i++){
+                        for(size_t j = 0; j < curves[i].control_point.size(); j++)
+                            if(abs(tmp.x() - curves[i].control_point[j].x()) <= 10
+                                    && abs(tmp.y() - curves[i].control_point[j].y()) <= 10){
+                                selected_curve = curPoint(i,j);
+                                break;
+                            }
+                            else{
+                                selected_curve.curve_num = -1;
+                            }
+                    }
+                    for(size_t i = 0; i < bsplines.size(); i++){
+                        for(size_t j = 0; j < bsplines[i].point.size(); j++)
+                            if(abs(tmp.x() - bsplines[i].point[j].x()) <= 10
+                                    && abs(tmp.y() - bsplines[i].point[j].y()) <= 10){
+                                selected_bspline = curPoint(i,j);
+                                break;
+                            }
+                            else{
+                                selected_bspline.curve_num = -1;
+                            }
+                    }
                 }
-                for(size_t i = 0; i < bsplines.size(); i++){
-                    for(size_t j = 0; j < bsplines[i].point.size(); j++)
-                        if(abs(tmp.x() - bsplines[i].point[j].x()) <= 10
-                                && abs(tmp.y() - bsplines[i].point[j].y()) <= 10){
-                            selected_bspline = curPoint(i,j);
-                            break;
-                        }
-                        else{
-                            selected_bspline.curve_num = -1;
-                        }
+                else{
+                    selected_curve.curve_num = -1;
+                    selected_bspline.curve_num = -1;
                 }
                 this->update(this->rect());
                 break;
@@ -302,6 +340,15 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
                 this->update(this->rect());
                 break;
             }
+            case FIT:{
+                BSplineFit bspf(points);
+                fits.push_back(bspf);
+                points.clear();
+                push_leftbutton = false;
+                isDrawing = false;
+                this->update(this->rect());
+                break;
+            }
             default:
                 break;
         }
@@ -310,12 +357,12 @@ void  MainWindow::mousePressEvent(QMouseEvent *e){
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e){
-     switch(mode){
-         case LINE:
-         case SELECT:
-         case RECT:
-         case OVAL:
-         case CIRCLE:{
+    switch(mode){
+        case LINE:
+        case SELECT:
+        case RECT:
+        case OVAL:
+        case CIRCLE:{
             if(push_leftbutton){
                 this->end = e->pos();
                 isDrawing = true;
@@ -323,33 +370,37 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e){
                 // std::cout<<"moving"<<std::endl;
             }
             break;
-         }
-         case POLYGEN:{
-             break;
-         }
+        }
+        case POLYGEN:{
+            break;
+        }
         case CURVE:{
             break;
         }
         case BSPLINE:{
-        }
-         case FILL:{
             break;
-         }
-         case MOVE:{
-            translate(e->pos());
+        }
+        case FIT:{
+            break;
+        }
+        case FILL:{
+            break;
+        }
+        case MOVE:{
+            translate_drawing(e->pos() - move_start);
             this->update(this->rect());
             break;
-         }
-         case SCALE:{
-         }
-         case ROTATE:{
+        }
+        case SCALE:{
+        }
+        case ROTATE:{
             if(push_leftbutton_twice){
                 rotate_drawing(start,e->pos());
                 this->update(this->rect());
             }
             break;
-         }
-     }
+        }
+    }
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *e){
@@ -400,6 +451,9 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
             case BSPLINE:{
                 break;
             }
+            case FIT:{
+                break;
+            }
             case FILL:{
                 break;
             }
@@ -414,9 +468,11 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e){
             case MOVE:{
                 this->isDrawing = false;
                 // need_clear = true;
-                translate(e->pos());
+                translate(e->pos() - move_start);
+                move_start = QPoint(0, 0);
                 this->update(this->rect());
                 selected_curve.curve_num = -1;
+                selected_bspline.curve_num = -1;
                 break;
             }
             case SCALE:{
@@ -481,6 +537,9 @@ void MainWindow::setMode_Line(){
     this->selected_line.clear();
     this->selected_ploy.clear();
     this->selected_oval.clear();
+    this->selected_bsplines.clear();
+    this->selected_curves.clear();
+    this->selected_fits.clear();
 }
 
 void MainWindow::setMode_Circle(){
@@ -493,6 +552,9 @@ void MainWindow::setMode_Circle(){
     this->selected_line.clear();
     this->selected_ploy.clear();
     this->selected_oval.clear();
+    this->selected_bsplines.clear();
+    this->selected_curves.clear();
+    this->selected_fits.clear();
 }
 
 void MainWindow::setMode_Pol(){
@@ -505,6 +567,9 @@ void MainWindow::setMode_Pol(){
     this->selected_line.clear();
     this->selected_ploy.clear();
     this->selected_oval.clear();
+    this->selected_bsplines.clear();
+    this->selected_curves.clear();
+    this->selected_fits.clear();
 }
 
 void  MainWindow::setMode_Curve(){
@@ -517,6 +582,9 @@ void  MainWindow::setMode_Curve(){
     this->selected_line.clear();
     this->selected_ploy.clear();
     this->selected_oval.clear();
+    this->selected_bsplines.clear();
+    this->selected_curves.clear();
+    this->selected_fits.clear();
 }
 void  MainWindow::setMode_Select(){
     this->mode = SELECT;
@@ -528,6 +596,9 @@ void  MainWindow::setMode_Select(){
     this->selected_line.clear();
     this->selected_ploy.clear();
     this->selected_oval.clear();
+    this->selected_bsplines.clear();
+    this->selected_curves.clear();
+    this->selected_fits.clear();
 }
 
 void MainWindow::clearAll(){
@@ -537,11 +608,16 @@ void MainWindow::clearAll(){
     this->circles.clear();
     this->polys.clear();
     this->curves.clear();
+    this->bsplines.clear();
+    this->fits.clear();
     this->ovals.clear();
     this->selected_circle.clear();
     this->selected_line.clear();
     this->selected_ploy.clear();
     this->selected_oval.clear();
+    this->selected_bsplines.clear();
+    this->selected_curves.clear();
+    this->selected_fits.clear();
     lines_tmp.clear();
     circles_tmp.clear();
     polys_tmp.clear();
@@ -579,7 +655,26 @@ void MainWindow::setMode_Bspline(){
     this->selected_line.clear();
     this->selected_ploy.clear();
     this->selected_oval.clear();
+    this->selected_bsplines.clear();
+    this->selected_curves.clear();
+    this->selected_fits.clear();
 }
+
+void MainWindow::setMode_Fit(){
+    this->mode = FIT;
+    start = QPoint(0,0);
+    end = QPoint(0,0);
+    tmp = QPoint(0,0);
+    this->isDrawing = false;
+    this->selected_circle.clear();
+    this->selected_line.clear();
+    this->selected_ploy.clear();
+    this->selected_oval.clear();
+    this->selected_bsplines.clear();
+    this->selected_curves.clear();
+    this->selected_fits.clear();
+}
+
 
 void MainWindow::setValue_width(int value){
     if(value<0) value =1;
@@ -627,6 +722,9 @@ void MainWindow::setMode_Rect(){
     this->selected_line.clear();
     this->selected_ploy.clear();
     this->selected_oval.clear();
+    this->selected_bsplines.clear();
+    this->selected_curves.clear();
+    this->selected_fits.clear();
 }
 
 void MainWindow::setMode_Oval(){
@@ -639,6 +737,9 @@ void MainWindow::setMode_Oval(){
     this->selected_line.clear();
     this->selected_ploy.clear();
     this->selected_oval.clear();
+    this->selected_bsplines.clear();
+    this->selected_curves.clear();
+    this->selected_fits.clear();
 }
 /********************************************************************************
  **************************** 选区 ***********************************************
@@ -687,7 +788,48 @@ void MainWindow::get_select(QPoint left_up, QPoint right_down){
         }
         ++i;
     }
-
+    i = 0;
+    for (auto beg =curves.begin();beg!=curves.end();++beg){
+        bool selected = true;
+        for(auto p : beg->control_point){
+            if(!inbox(p,left_up,right_down) || !inbox(p,left_up,right_down)){
+                selected = false;
+                break;
+            }
+        }
+        if(selected){
+            selected_curves.insert(i);
+        }
+        ++i;
+    }
+    i = 0;
+    for (auto beg =bsplines.begin();beg!=bsplines.end();++beg){
+        bool selected = true;
+        for(auto p : beg->point){
+            if(!inbox(p,left_up,right_down) || !inbox(p,left_up,right_down)){
+                selected = false;
+                break;
+            }
+        }
+        if(selected){
+            selected_bsplines.insert(i);
+        }
+        ++i;
+    }
+    i = 0;
+    for (auto beg =fits.begin();beg!=fits.end();++beg){
+        bool selected = true;
+        for(auto p : beg->point){
+            if(!inbox(p,left_up,right_down) || !inbox(p,left_up,right_down)){
+                selected = false;
+                break;
+            }
+        }
+        if(selected){
+            selected_fits.insert(i);
+        }
+        ++i;
+    }
 }
 
 bool MainWindow::inbox(QPoint p,QPoint left_up, QPoint right_down){
@@ -711,16 +853,70 @@ void MainWindow::translate(QPoint dest){
     for (auto &index: selected_ploy){
         polys[index].translate(dest.x(),dest.y());
     }
-    if(selected_curve.curve_num >= 0)
-        curves[selected_curve.curve_num].translate(dest.x(),dest.y(), selected_curve.point_num);
-    if(selected_bspline.curve_num >= 0)
-        bsplines[selected_bspline.curve_num].translate(dest.x(),dest.y(), selected_bspline.point_num);
     for (auto &index: selected_oval){
         ovals[index].translate(dest.x(),dest.y());
     }
+    for (auto &index: selected_curves){
+        curves[index].translate(dest.x(),dest.y());
+    }
+    for (auto &index: selected_bsplines){
+        bsplines[index].translate(dest.x(),dest.y());
+    }
+    for (auto &index: selected_fits){
+        fits[index].translate(dest.x(),dest.y());
+    }
+    if(selected_curve.curve_num >= 0)
+        curves[selected_curve.curve_num].translate(dest.x() + move_start.x(), dest.y() + move_start.y(), selected_curve.point_num);
+    if(selected_bspline.curve_num >= 0)
+        bsplines[selected_bspline.curve_num].translate(dest.x() + move_start.x(), dest.y() + move_start.y(), selected_bspline.point_num);
+    /*
     if(selected_curve.curve_num < 0)
         return;
     curves[selected_curve.curve_num].translate(dest.x(),dest.y(), selected_curve.point_num);
+    */
+}
+
+void MainWindow::translate_drawing(QPoint base){
+    for(auto &index: selected_line){
+        Line line_tmp = lines[index];
+        line_tmp.translate(base.x(),base.y());
+        lines_tmp.push_back(line_tmp);
+    }
+    for(auto &index: selected_circle){
+        Circle cir_tmp = circles[index];
+        cir_tmp.translate(base.x(),base.y());
+        circles_tmp.push_back(cir_tmp);
+    }
+    for(auto &index: selected_ploy){
+        Polygen pol_tmp = polys[index];
+        pol_tmp.translate(base.x(),base.y());
+        polys_tmp.push_back(pol_tmp);
+    }
+    for(auto &index: selected_oval){
+        Oval ovl_tmp = ovals[index];
+        ovl_tmp.translate(base.x(),base.y());
+        ovals_tmp.push_back(ovl_tmp);
+    }
+    for (auto &index: selected_curves){
+        Curve cur_tmp = curves[index];
+        cur_tmp.translate(base.x(),base.y());
+        curves_tmp.push_back(cur_tmp);
+    }
+    for (auto &index: selected_bsplines){
+        BSpline bsp_tmp = bsplines[index];
+        bsp_tmp.translate(base.x(),base.y());
+        bsplines_tmp.push_back(bsp_tmp);
+    }
+    for (auto &index: selected_fits){
+        BSplineFit fit_tmp = fits[index];
+        fit_tmp.translate(base.x(),base.y());
+        fits_tmp.push_back(fit_tmp);
+    }
+    if(selected_curve.curve_num >= 0)
+        curves[selected_curve.curve_num].translate(base.x() + move_start.x(), base.y() + move_start.y(), selected_curve.point_num);
+    if(selected_bspline.curve_num >= 0)
+        bsplines[selected_bspline.curve_num].translate(base.x() + move_start.x(), base.y() + move_start.y(), selected_bspline.point_num);
+
 }
 
 /****************************************************************************
@@ -788,7 +984,7 @@ void MainWindow::scale(double value){
 /****************************************************************************
  ******************************* 缓冲区绘制 ***********************************
  ***************************************************************************/
-
+/*
 void MainWindow::select_draw(QPainter &painter){
     for(auto &index: selected_line){
         lines[index].drawByBresenham(painter);
@@ -808,9 +1004,50 @@ void MainWindow::select_draw(QPainter &painter){
     for(auto &index: selected_oval){
         ovals[index].draw(painter);
     }
-    if(selected_curve.curve_num < 0)
-        return;
-    curves[selected_curve.curve_num].draw(painter);
+    for(auto &index: selected_curves){
+        curves[index].draw(painter);
+    }
+    for(auto &index: selected_bsplines){
+        bsplines[index].draw(painter);
+    }
+    for(auto &index: selected_fits){
+        fits[index].draw(painter);
+    }
+}
+*/
+void MainWindow::select_draw(QPainter &painter){
+    for(auto &index: lines_tmp){
+        index.drawByBresenham(painter);
+    }
+    for(auto &index: circles_tmp){
+        index.draw(painter);
+    }
+    for(auto &index: polys_tmp){
+        index.draw(painter);
+    }
+    for(auto &index: ovals_tmp){
+        index.draw(painter);
+    }
+    for(auto &index: curves_tmp){
+        index.draw(painter);
+    }
+    for(auto &index: bsplines_tmp){
+        index.draw(painter);
+    }
+    for(auto &index: fits_tmp){
+        index.draw(painter);
+    }
+    if(selected_curve.curve_num >= 0)
+        curves[selected_curve.curve_num].draw(painter);
+    if(selected_bspline.curve_num >= 0)
+        bsplines[selected_bspline.curve_num].draw(painter);
+    lines_tmp.clear();
+    circles_tmp.clear();
+    polys_tmp.clear();
+    ovals_tmp.clear();
+    curves_tmp.clear();
+    bsplines_tmp.clear();
+    fits_tmp.clear();
 }
 
 void MainWindow::select_draw_rotate(QPainter &painter){
@@ -848,6 +1085,8 @@ void MainWindow::select_clear_indarwimg(QPainter &painter){
     for(auto &index: selected_oval){
         ovals[index].clear(painter);
     }
+
+
 
 }
 

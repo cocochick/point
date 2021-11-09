@@ -50,8 +50,8 @@ void Polygen::translate(int x, int y){
     int trans_y = y - point[0].y();
 
     for(auto beg = point.begin();beg != point.end();++beg){
-        beg->setX(beg->x() + trans_x);
-        beg->setY(beg->y() + trans_y);
+        beg->setX(beg->x() + x);
+        beg->setY(beg->y() + y);
     }
     setVertex();
 }
