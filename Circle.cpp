@@ -1,3 +1,4 @@
+﻿
 #include "Circle.h"
 #include "method.h"
 #include <Eigen/Eigen>
@@ -54,7 +55,9 @@ void Circle::Complete(int x, int y,QPainter &painter)  {
 
 void Circle::translate(int x, int y){
    // clear();
-   center = QPoint(x,y);
+   //center = QPoint(x,y);
+    center.setX(center.x() + x);
+    center.setY(center.y() + y);
 }
 
 void Circle::clear(QPainter &painter){

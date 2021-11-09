@@ -10,6 +10,7 @@
 #include "Polygen.h"
 #include "Curve.h"
 #include "BSpline.h"
+#include "BSplineFit.h"
 #include "Rect.h"
 #include "Oval.h"
 
@@ -59,29 +60,37 @@ private:
     std::vector<Circle> circles;
     std::vector<Oval> ovals;
     std::vector<Curve> curves;
+    std::vector<BSpline> bsplines;
+    std::vector<BSplineFit> fits;
 
     std::vector<Line> lines_tmp;
     std::vector<Polygen> polys_tmp;
     std::vector<Circle> circles_tmp;
-    std::vector<BSpline> bsplines;
     std::vector<Oval> ovals_tmp;
+    std::vector<Curve> curves_tmp;
+    std::vector<BSpline> bsplines_tmp;
+    std::vector<BSplineFit> fits_tmp;
 
     std::vector<QPoint> points;
     std::set<size_t> selected_line;
     std::set<size_t> selected_ploy;
     std::set<size_t> selected_circle;
     std::set<size_t> selected_oval;
+    std::set<size_t> selected_curves;
+    std::set<size_t> selected_bsplines;
+    std::set<size_t> selected_fits;
     curPoint selected_curve;
 
     curPoint selected_bspline;
     QPen pen;
-
+    QPoint move_start;
 
 
 private:
     void get_select(QPoint start, QPoint end);
     static bool inbox(QPoint p,QPoint left_up, QPoint right_down);
     void translate(QPoint dest);
+    void translate_drawing(QPoint base);
     void rotate(QPoint base, QPoint dest);
     void rotate_drawing(QPoint base, QPoint dest);
     void scale_diawing(double value);
@@ -101,6 +110,7 @@ public slots:
     void setMode_Rotate();
     void setMode_Scale();
     void setMode_Bspline();
+    void setMode_Fit();
     void setMode_Rect();
     void setMode_Oval();
     void setValue_width(int value);

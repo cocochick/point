@@ -18,6 +18,7 @@ SOURCES += \
     Polygen.cpp \
     BSpline.cpp \
     Rect.cpp \
+    BSplineFit.cpp \
     main.cpp \
     mainwindow.cpp \
     method.cpp
@@ -31,6 +32,7 @@ HEADERS += \
     Polygen.h \
     BSpline.h \
     Rect.h \
+    BSplineFit.h \
     mainwindow.h \
     method.h
 
