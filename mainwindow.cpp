@@ -116,7 +116,8 @@ void MainWindow::paintEvent(QPaintEvent *){
 
         }
         painter.drawPixmap(0, 0, temppix);
-    }else{
+    }
+    else{
         pix = QPixmap(1000,800);
         pix.fill(Qt::white);
         QPainter ppix(&pix);
@@ -132,7 +133,9 @@ void MainWindow::paintEvent(QPaintEvent *){
         for (auto beg =curves.begin();beg!=curves.end();++beg){
             beg->draw(ppix);
         }
-        for (auto beg =bsplines.begin();beg!=bsplines.end();++beg){}
+        for (auto beg =bsplines.begin();beg!=bsplines.end();++beg){
+            beg->draw(ppix);
+        }
         for (auto beg =ovals.begin();beg!=ovals.end();++beg){
             beg->draw(ppix);
         }

@@ -9,6 +9,7 @@
 class Curve{
 public:
     std::vector<QPoint> control_point;  //控制点集
+    QPen pen;
 public:
     Curve(){}
     Curve(std::vector<QPoint> p);

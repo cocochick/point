@@ -5,7 +5,8 @@
 #include "Line.h"
 #include "Circle.h"
 #include <vector>
-
+#include <Eigen/Dense>
+#include<iostream>
 class BSpline
 {
 public:
@@ -16,7 +17,9 @@ public:
     BSpline();
     BSpline(std::vector<QPoint> p);
     void draw(QPainter &painter);
+    void BSplineSet(QPainter &painter);
     void translate(int x, int y, int p);
+    void BSplineFit(QPainter &painter);
 };
 
 #endif // BSPLINE_H

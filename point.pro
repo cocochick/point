@@ -16,7 +16,6 @@ SOURCES += \
     Line.cpp \
     Oval.cpp \
     Polygen.cpp \
-
     BSpline.cpp \
     Rect.cpp \
     main.cpp \
