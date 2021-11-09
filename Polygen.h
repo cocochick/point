@@ -1,10 +1,30 @@
-#pragma once
+﻿#pragma once
 #ifndef POLYGEN_H
 #define POLYGEN_H
 
 #include <QPainter>
 #include "Line.h"
 #include <vector>
+#include <stack>
+
+class edge
+{
+private:
+    double x;// 边的起始x坐标或边与扫描线的交点坐标
+    double dx;// 边的斜率的倒数
+    int ymax;// 边的最大y坐标
+public:
+    edge(){}
+    edge(double x, double dx, int ymax)
+        :x(x), dx(dx), ymax(ymax){}
+    void setX(double x);
+    void setDx(double dx);
+    void setYmax(int ymax);
+    double getX() const;
+    double getDx() const;
+    int getYmax() const;
+};
+
 
 class Polygen{
 public:
@@ -25,6 +45,7 @@ public:
     void rotate(int x, int y, int dest_x, int dest_y);
     void scale(double value);
     void clear(QPainter &painter);
+    void fill(QPainter &painter);
     virtual ~Polygen();
 };
 

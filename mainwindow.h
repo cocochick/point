@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -63,7 +63,6 @@ private:
     std::vector<Line> lines_tmp;
     std::vector<Polygen> polys_tmp;
     std::vector<Circle> circles_tmp;
-    std::vector<Curve> curves;
     std::vector<BSpline> bsplines;
     std::vector<Oval> ovals_tmp;
 
