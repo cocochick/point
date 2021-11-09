@@ -2,33 +2,50 @@
 #include "method.h"
 #include <Eigen/Eigen>
 #include <Eigen/Dense>
+#include <iostream>
 
 using namespace Eigen;
 
 Polygen::Polygen(std::vector<QPoint> p,QPen &pen_value):point(p) {
+    this->need_fill = false;
     pen = pen_value;
+    fillpen = pen;
     for (auto iter = p.begin(); iter != p.end() - 1; iter++) {
         Line line(*iter, *(iter + 1),pen_value);
         vertex.push_back(line);
     }
     Line line(*p.begin(), *(p.end() - 1),pen_value);
     vertex.push_back(line);
+
 }
 
 
+void Polygen::needfill(){
+    this->need_fill = true;
+}
+
+void Polygen::setFillpen(QPen p){
+    fillpen = p;
+}
 
 void Polygen::draw(QPainter &painter){
     painter.setPen(pen);
     for (auto &line : vertex) {
         line.drawByBresenham(painter);
     }
-    fill(painter);
+    if(need_fill){
+        painter.setPen(fillpen);
+        fill(painter);
+    }
 }
 
 Polygen::Polygen(const Polygen& p){
     point = p.point;
     vertex = p.vertex;
     pen = p.pen;
+    need_fill = p.need_fill;
+    fillpen = p.fillpen;
+    // update();
 }
 
 void Polygen::setVertex(){   
@@ -100,122 +117,123 @@ void Polygen::scale(double value){
     setVertex();
 }
 
-
 void Polygen::fill(QPainter &painter){
     point.push_back(point[0]);
-    if(point.size()<3)
-        return;
-    int i, j;
-    int x0, x1, y, tx;
+        if(point.size()<3)
+            return;
+        int  j;
+        int x0=0, x1=0, y=0, tx=0;
 
-    int scanLines;//扫描线数量
-    int min;//最低扫描线号
-    int max;//最高扫描线号
+        int scanLines;//扫描线数量
+        int min = point[0].y();//最低扫描线号
+        int max = point[0].y();//最高扫描线号
 
-    QVector<QList<edge>> ET;//边表
-    QList<edge> AET;//活化边表
-    QVector<double> arr;//扫描线与各边交点表
+        QVector<QList<edge>> ET;//边表
+        QList<edge> AET;//活化边表
+        QVector<double> arr;//扫描线与各边交点表
 
-    QPoint p0;//边的起点
-    QPoint p1;//边的终点
-    QPoint temp;//保存位置变量
-    edge* pNode;//边结点指针
+        QPoint p0;//边的起点
+        QPoint p1;//边的终点
+        QPoint temp;//保存位置变量
+        edge* pNode;//边结点指针
 
-    QVector<QList<edge>>::iterator iterET;//边表矢量迭代器
-    QList<edge>::iterator iterEdge;//边链表迭代器
 
-    for (auto iterPos=point.begin(); iterPos!=point.end(); iterPos++)
-        if (iterPos->y() < min)
-            min = iterPos->y();
-    for (auto iter=point.begin(); iter!=point.end(); iter++)
-        if (iter->y() > max)
-            max = iter->y();
-    scanLines = max - min;
 
-    //建立边表ET
-    ET.resize(scanLines);
-    //逐边进行处理，将每一条边的信息插入到ET中
-    for(i=0; i<point.size(); i++)
-    {
-        if(i < point.size()-1)
+        for (auto iterPos=point.begin(); iterPos!=point.end(); iterPos++)
+            if (iterPos->y() < min)
+                min = iterPos->y();
+        for (auto iter=point.begin(); iter!=point.end(); iter++)
+            if (iter->y() > max)
+                max = iter->y();
+        scanLines = max - min;
+
+        //建立边表ET
+        ET.resize(scanLines);
+        //逐边进行处理，将每一条边的信息插入到ET中
+        for(size_t i=0; i<point.size(); i++)
         {
-            p0 = point[i];
-            p1 = point[i+1];
-        }
-        else
-        {
-            p0 = point[i];
-            p1 = point[0];
-        }
-
-        if(p0.y()>p1.y())//将p0设为边的起点坐标，y坐标较小
-        {
-            temp = p0;
-            p0 = p1;
-            p1 = temp;
-        }
-
-        if(p0.y() != p1.y())//非水平边
-        {
-            pNode = new edge;
-            pNode->setX(static_cast<double>(p0.x()));
-            pNode->setDx(static_cast<double>(p1.x()-p0.x())/(p1.y()-p0.y()));
-            pNode->setYmax(p1.y()-1);//下闭上开
-            ET[p0.y()-min].append(*pNode);
-        }
-    }//所有边都已插入到ET中
-
-    for (i=0; i<scanLines; i++)// 开始扫描，各边依次加入到AET中
-    {
-        y = i + min;//当前扫描线y坐标
-        if(!ET[i].isEmpty())//有边加入AET
-        {
-            for(iterEdge=ET[i].begin(); iterEdge!=ET[i].end(); iterEdge++)
-                AET.append(*iterEdge);
-        }
-        ET[i].clear();//边结点已取出加入AET，无需保留
-
-        //处理活化边表AET
-        if(!AET.isEmpty())//首先删除扫描线以下的边
-        {
-            for(iterEdge=AET.begin(); iterEdge!=AET.end(); iterEdge++)
+            if(i < point.size()-1)
             {
-                if(AET.isEmpty())
-                    break;
-                if(iterEdge->getYmax()<y){
-                    AET.erase(iterEdge);
-                    iterEdge=AET.begin();
-           }
+                p0 = point[i];
+                p1 = point[i+1];
             }
-        }
-
-        if(!AET.isEmpty())//活化边表非空，求出交点，排序，画线
-        {
-            for(iterEdge=AET.begin(); iterEdge!=AET.end(); iterEdge++)
+            else
             {
-                arr.append(iterEdge->getX());//取出所有交点
-                iterEdge->setX(iterEdge->getX() + iterEdge->getDx());
+                p0 = point[i];
+                p1 = point[0];
             }
-            std::sort(arr.begin(), arr.end());//交点排序
-            for(j=0; j<arr.size(); j++)
+
+            if(p0.y()>p1.y())//将p0设为边的起点坐标，y坐标较小
             {
-                if(j%2 == 0 && j + 1 < arr.size())
+                temp = p0;
+                p0 = p1;
+                p1 = temp;
+            }
+
+            if(p0.y() != p1.y())//非水平边
+            {
+                pNode = new edge;
+                pNode->setX(static_cast<double>(p0.x()));
+                pNode->setDx(static_cast<double>(p1.x()-p0.x())/(p1.y()-p0.y()));
+                pNode->setYmax(p1.y()-1);//下闭上开
+                ET[p0.y()-min].append(*pNode);
+            }
+        }//所有边都已插入到ET中
+
+        for (int i=0; i<scanLines; i++)// 开始扫描，各边依次加入到AET中
+        {
+            y = i + min;//当前扫描线y坐标
+            if(!ET[i].isEmpty())//有边加入AET
+            {
+                for(auto iterEdge=ET[i].begin(); iterEdge!=ET[i].end(); iterEdge++)
+                    AET.append(*iterEdge);
+            }
+            ET[i].clear();//边结点已取出加入AET，无需保留
+
+            //处理活化边表AET
+            if(!AET.isEmpty())//首先删除扫描线以下的边
+            {
+                for(auto iterEdge=AET.begin(); iterEdge!=AET.end(); iterEdge++)
                 {
-                    tx = static_cast<int>(arr[j]);// 左边交点向右取整
-                    if(arr[j]-tx)
-                        x0 = tx + 1;
-                    else
-                        x0 = tx;
-                    x1 = static_cast<int>(arr[j + 1]);// 右边交点向左取整
+                    if(AET.isEmpty())
+                        break;
+                    if(iterEdge->getYmax()<y){
+                        AET.erase(iterEdge);
+                        iterEdge=AET.begin();
+               }
                 }
-                painter.drawLine(QPoint(x0, y),QPoint(x1, y));
             }
-            arr.clear();
-        }
-    }//所有扫描线处理完毕
-    ET.clear();
-    point.pop_back();
+
+            if(!AET.isEmpty())//活化边表非空，求出交点，排序，画线
+            {
+                for(auto iterEdge=AET.begin(); iterEdge!=AET.end(); iterEdge++)
+                {
+                    arr.append(iterEdge->getX());//取出所有交点
+                    iterEdge->setX(iterEdge->getX() + iterEdge->getDx());
+                }
+                std::sort(arr.begin(), arr.end());//交点排序
+                for(j=0; j<arr.size(); j++)
+                {
+                    if(j%2 == 0 && j + 1 < arr.size())
+                    {
+                        tx = static_cast<int>(arr[j]);// 左边交点向右取整
+                        if(arr[j]-tx)
+                            x0 = tx + 1;
+                        else
+                            x0 = tx;
+                        x1 = static_cast<int>(arr[j + 1]);// 右边交点向左取整
+                    }
+                    painter.drawLine(QPoint(x0, y),QPoint(x1, y));
+                }
+                arr.clear();
+            }
+        }//所有扫描线处理完毕
+        ET.clear();
+        point.pop_back();
 }
+
+
+
 
 Polygen::~Polygen(){
 

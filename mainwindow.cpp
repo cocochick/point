@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->rubber, SIGNAL(clicked()), this, SLOT(rubber()));
     connect(ui->rect, SIGNAL(clicked()), this, SLOT(setMode_Rect()));
     connect(ui->oval, SIGNAL(clicked()), this, SLOT(setMode_Oval()));
+    connect(ui->Fill, SIGNAL(clicked()), this, SLOT(setMode_Fill()));
 }
 
 MainWindow::~MainWindow(){
@@ -441,7 +442,7 @@ void  MainWindow::mouseDoubleClickEvent(QMouseEvent *e){
     if(e->button() == Qt::LeftButton){
         if(mode == POLYGEN){
              Polygen pol(points,pen);
-             polys.push_back(pol);
+             polys.push_back(std::move(pol));
              points.clear();
              push_leftbutton = false;
              isDrawing = false;
@@ -470,8 +471,6 @@ void MainWindow::wheelEvent(QWheelEvent *e){
  ******************* 槽函数 ***************************************
  *****************************************************************/
 void MainWindow::setMode_Line(){
-
-
     this->mode = LINE;
     start = QPoint(0,0);
     end = QPoint(0,0);
@@ -639,6 +638,14 @@ void MainWindow::setMode_Oval(){
     this->selected_line.clear();
     this->selected_ploy.clear();
     this->selected_oval.clear();
+}
+
+void MainWindow::setMode_Fill(){
+    for(auto &index: selected_ploy){
+        polys[index].setFillpen(QPen(pen.color(),1));
+        polys[index].needfill();
+    }
+    this->update(this->rect());
 }
 /********************************************************************************
  **************************** 选区 ***********************************************

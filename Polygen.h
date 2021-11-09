@@ -29,12 +29,17 @@ public:
 class Polygen{
 public:
     QPen pen;
+    QPen fillpen;
     std::vector<QPoint> point;  //顶点集
     std::vector<Line> vertex;   //边集
+
+
+
 public:
     Polygen(){}
     Polygen(std::vector<QPoint> p, QPen &pen_value);
     Polygen(const Polygen& p);
+    bool need_fill; //是否填充
     //Polygen(const QPoint &cen, int r);
 
 public:
@@ -46,6 +51,9 @@ public:
     void scale(double value);
     void clear(QPainter &painter);
     void fill(QPainter &painter);
+    void needfill();
+    void setFillpen(QPen p);
+    // void update();
     virtual ~Polygen();
 };
 

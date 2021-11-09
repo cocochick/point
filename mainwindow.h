@@ -106,6 +106,7 @@ public slots:
     void setValue_width(int value);
     void setPen_type(int index);
     void setPen_pen();
+    void setMode_Fill();
     void clearAll();
     void rubber();
 
