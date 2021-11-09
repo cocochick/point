@@ -96,6 +96,7 @@ private:
     void scale_diawing(double value);
     void scale(double value);
     void select_draw(QPainter &painter);
+    void select_draw_scale(QPainter &painter);
     void select_draw_rotate(QPainter &painter);
     void select_clear_indarwimg(QPainter &painter);
 
