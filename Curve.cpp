@@ -45,3 +45,18 @@ void Curve::translate(int x, int y, int p){
     control_point[p].setX(x);
     control_point[p].setY(y);
 }
+
+void Curve::translate(int x, int y){
+    QPoint qpoint(0, 0);
+    for(auto x : control_point){
+        qpoint += x;
+    }
+    qpoint /= control_point.size();
+    int trans_x = x - qpoint.x();
+    int trans_y = y - qpoint.y();
+
+    for(auto beg = control_point.begin();beg != control_point.end();++beg){
+        beg->setX(beg->x() + x);
+        beg->setY(beg->y() + y);
+    }
+}

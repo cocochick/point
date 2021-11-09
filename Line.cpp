@@ -1,4 +1,4 @@
-#include "Line.h"
+﻿#include "Line.h"
 #include "method.h"
 #include <Eigen/Eigen>
 #include <Eigen/Dense>
@@ -130,10 +130,10 @@ void Line::drawByBresenham(QPainter &painter){
 void Line::translate(int x, int y){
     int trans_x = x -(start.x()+end.x())/2;
     int trans_y = y - (start.y()+end.y())/2;
-    start.setX(start.x()+trans_x);
-    end.setX(end.x()+trans_x);
-    start.setY(start.y()+trans_y);
-    end.setY(end.y()+trans_y);
+    start.setX(start.x()+x);
+    end.setX(end.x()+x);
+    start.setY(start.y()+y);
+    end.setY(end.y()+y);
 }
 
 void Line::clear(QPainter &painter){

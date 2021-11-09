@@ -1,4 +1,4 @@
-#ifndef MODE_H
+﻿#ifndef MODE_H
 #define MODE_H
 
 enum Mode{
@@ -7,6 +7,7 @@ enum Mode{
     POLYGEN,
     CURVE,
     BSPLINE,
+    FIT,
     RECT,
     OVAL,
     FILL,
