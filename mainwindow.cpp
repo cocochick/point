@@ -118,7 +118,7 @@ void MainWindow::paintEvent(QPaintEvent *){
                     pix = temppix;
                     need_clear = false;
                 }
-                select_draw(ptmp);
+                select_draw_scale(ptmp);
                 break;
 
         }
@@ -991,8 +991,7 @@ void MainWindow::scale(double value){
 /****************************************************************************
  ******************************* 缓冲区绘制 ***********************************
  ***************************************************************************/
-/*
-void MainWindow::select_draw(QPainter &painter){
+void MainWindow::select_draw_scale(QPainter &painter){
     for(auto &index: selected_line){
         lines[index].drawByBresenham(painter);
     }
@@ -1002,12 +1001,6 @@ void MainWindow::select_draw(QPainter &painter){
     for(auto &index: selected_ploy){
         polys[index].draw(painter);
     }
-
-    if(selected_curve.curve_num >= 0)
-        curves[selected_curve.curve_num].draw(painter);
-    if(selected_bspline.curve_num >= 0)
-        bsplines[selected_bspline.curve_num].draw(painter);
-
     for(auto &index: selected_oval){
         ovals[index].draw(painter);
     }
@@ -1021,7 +1014,7 @@ void MainWindow::select_draw(QPainter &painter){
         fits[index].draw(painter);
     }
 }
-*/
+
 void MainWindow::select_draw(QPainter &painter){
     for(auto &index: lines_tmp){
         index.drawByBresenham(painter);
